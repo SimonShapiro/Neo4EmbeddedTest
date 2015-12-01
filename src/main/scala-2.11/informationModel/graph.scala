@@ -45,7 +45,7 @@ class graph {
     nodes.foreach(n => {
       if (n._2.isOfType(t)) {
         val newNode = n._2.deepCopy
-        sg.nodes(n._1) = newNode
+        sg <= newNode
       }
     })
     edges.foreach(e => {
@@ -56,10 +56,15 @@ class graph {
   }
 
   def isSubGraphOf(g: graph) = {  // if all members are also members of g
-    val l = nodes.map(p => {
-      if (g.nodes.contains(p._1)) p._2.isIdenticalTo(p._2.withProperties, g.nodes(p._1))
+    val nodeTest = nodes.map(n => {
+      if (g.nodes.contains(n._1)) n._2.isIdenticalTo(n._2.withProperties, g.nodes(n._1))
+      else false
     })
-    println(l.getClass)
-    l.foldLeft(true)((r, c) => r && c.asInstanceOf[Boolean])
+    val nodesIn = nodeTest.foldLeft(true)((r, c) => r && c)
+    val edgeTest = edges.map(e => {
+      if (g.edges.contains(e._1)) e._2.isIdenticalTo(e._2.withProperties, g.edges(e._1))
+    })
+    val edgesIn = edgeTest.foldLeft(true)((r, c) => r && c.asInstanceOf[Boolean])
+    nodesIn && edgesIn
   }
 }
