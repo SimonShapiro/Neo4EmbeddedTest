@@ -1,7 +1,10 @@
-package informationModel
+package informationModel.core
 
+import informationModel.core.node
+import org.json4s.JsonDSL._
+import org.json4s.jackson.JsonMethods._
 import org.json4s.native.Serialization
-import org.json4s.{NoTypeHints, native}
+import org.json4s.{NoTypeHints, native, _}
 
 import scala.collection.mutable
 
@@ -71,12 +74,8 @@ class graph {
     val edgesIn = edgeTest.foldLeft(true)((r, c) => r && c)
     nodesIn && edgesIn
   }
-  import native.Serialization.{read, write => swrite}
 
   def toJson = {
-    import org.json4s._
-    import org.json4s.JsonDSL._
-    import org.json4s.jackson.JsonMethods._
     implicit val formats = Serialization.formats(NoTypeHints)
     val nodeMap = nodes.map(n => (n._1,n._2.hasType,n._2.id,n._2.getAllProperties))
     val edgeMap = edges.map(n => (n._1,n._2.hasType,n._2.id,n._2.from.id,n._2.to.id,n._2.getAllProperties))

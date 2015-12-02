@@ -1,4 +1,4 @@
-package informationModel
+package informationModel.core
 
 /**
  * Created by simonshapiro on 29/11/15.

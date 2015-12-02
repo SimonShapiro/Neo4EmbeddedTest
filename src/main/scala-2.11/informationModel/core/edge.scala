@@ -1,6 +1,6 @@
-package informationModel
+package informationModel.core
 
-import scala.collection.mutable
+import informationModel.core.node
 
 /**
  * Created by simonshapiro on 23/11/15.

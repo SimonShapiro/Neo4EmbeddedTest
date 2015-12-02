@@ -1,8 +1,7 @@
-package informationModel
+package informationModel.core
 
 abstract class node extends graphMember {
   def deepCopy: node
   def hasSameId(n: node): Boolean = n.id == id
-
 }
 

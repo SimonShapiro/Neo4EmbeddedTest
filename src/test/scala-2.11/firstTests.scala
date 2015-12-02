@@ -3,6 +3,8 @@
  */
 
 import informationModel._
+import informationModel.core.graph
+import informationModel.dsl.{system, dataset}
 import org.json4s.{NoTypeHints, native}
 import org.scalatest.FunSuite
 
@@ -71,9 +73,9 @@ class firstTests extends FunSuite {
     val n = g.getNode("a")
     val e = g.getEdge("a->b")
     assert(n.id == "a")
-    assert(n.getClass.toString == "class informationModel.system")
+    assert(n.getClass.toString == "class informationModel.dsl.system")
     assert(e.id == "a->b")
-    assert(e.getClass.toString == "class informationModel.systemCONNECTSsystem")
+    assert(e.getClass.toString == "class informationModel.dsl.systemCONNECTSsystem")
     println("End: A graph should be able to return a typed node or edge by id")
   }
 

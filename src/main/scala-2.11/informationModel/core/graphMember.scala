@@ -1,4 +1,4 @@
-package informationModel
+package informationModel.core
 
 /**
  * Created by simonshapiro on 25/11/15.
@@ -6,18 +6,10 @@ package informationModel
 
 import java.util.NoSuchElementException
 
-import informationModel.propertyChatacteristics._
-import org.json4s.native
+import informationModel.core.propertyChatacteristics.propertyChatacteristics
+import org.json4s.native.Serialization.{write => swrite}
 
-import scala.collection.mutable.ArrayBuffer
 import scala.collection.{immutable, mutable}
-import scala.native
-import native.Serialization.{read, write => swrite}
-
-
-import org.json4s._
-import org.json4s.native.Serialization
-import org.json4s.native.Serialization.{read, write}
 
 trait graphMember {
 
@@ -79,13 +71,4 @@ trait graphMember {
     }
   }
 
-  def toJson = {
-    implicit val formats = native.Serialization.formats(NoTypeHints)
-    val ser = withProperties match {
-      case propertyChatacteristics.none => ""
-      case _ =>  if (properties.size > 0) swrite(id)
-                    else ""
-    }
-    println(ser)
-  }
 }

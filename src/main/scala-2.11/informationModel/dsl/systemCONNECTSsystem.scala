@@ -1,6 +1,7 @@
-package informationModel
+package informationModel.dsl
 
-import informationModel.propertyChatacteristics._
+import informationModel.core.{edge, propertyChatacteristics}
+import informationModel.dsl.systemPRODUCESdataset
 
 import scala.collection.immutable.HashMap
 

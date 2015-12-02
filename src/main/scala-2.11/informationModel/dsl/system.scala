@@ -1,4 +1,7 @@
-package informationModel
+package informationModel.dsl
+
+import informationModel.core.{node, propertyChatacteristics}
+import informationModel.dsl.systemPRODUCESdataset
 
 import scala.collection.immutable
 

@@ -1,5 +1,8 @@
 package informationModel
 
+import informationModel.core.graph
+import informationModel.dsl.{system, dataset}
+
 /**
  * Created by simonshapiro on 23/11/15.
  */

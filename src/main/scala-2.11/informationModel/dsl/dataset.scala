@@ -1,6 +1,7 @@
-package informationModel
+package informationModel.dsl
 
-import scala.collection.mutable
+import informationModel.core.{node, propertyChatacteristics}
+
 import scala.collection.immutable
 
 /**
