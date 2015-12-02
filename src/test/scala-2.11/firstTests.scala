@@ -3,9 +3,11 @@
  */
 
 import informationModel._
+import org.json4s.{NoTypeHints, native}
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
+import scala.native
 
 class firstTests extends FunSuite {
 
@@ -127,13 +129,36 @@ class firstTests extends FunSuite {
 //    gUtils.typedSubgraph[system](g)
     */
     val sg = g.filterOnNodeType("dataset")
-    assert((sg.nodes.size == 2) && (sg.edges.size) == 1)
+    assert((sg.nodes.size == 2) && (sg.edges.size == 1))
     assert(sg.isSubGraphOf(g))
     val n1 = sg.getNode("DS").asInstanceOf[dataset]
     n1.<=("name","ds")
     sg.getNode("S2").asInstanceOf[system].<=("name","fred")
     assert((!sg.isSubGraphOf(g)))
+    val sg2 = g.filterOnNodeType("system")
+    assert(sg2.isSubGraphOf(g))
+    sg2 <=> sg2.getNode("S3").asInstanceOf[system].CONNECTS(s2)
+    assert(!sg2.isSubGraphOf(g))
     println("End: A graph can return the sub-graph based on everything about a particular type of node")
   }
 
+  test("graph should have a toJson string representation") {
+    val g = new graph
+    val s1 = system("S1").<=("name", "System 1").<=("age", 27)
+    val s2 = system("S2")
+    val ds = dataset("DS").<=("name", "Main Dataset")
+    g <= s1
+    g <= s2
+    g <=> s1.CONNECTS(s2,"S1_S2")
+    g <=> s2.PRODUCES(ds,"S2_DS").<=("costPerRun", 12.5)
+/*
+    s1.toJson
+    s2.toJson
+    */
+    val expectedResult =
+      """{"graph":{"nodes":[{"id":"DS","type":"dataset","properties":{"name":"Main Dataset"}},{"id":"S1","type":"system","properties":{"age":27,"name":"System 1"}},{"id":"S2","type":"system","properties":{}}],"edges":[{"id":"S2_DS","type":"systemPRODUCESdataset","from":"S2","to":"DS","properties":{"costPerRun":12.5}},{"id":"S1_S2","type":"systemCONNECTSsystem","from":"S1","to":"S2","properties":{}}]}}"""
+    val json = g.toJson
+    assert(json == expectedResult)
+    println("End: graph should have a toJson string representation")
+  }
 }

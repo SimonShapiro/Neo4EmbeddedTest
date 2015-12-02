@@ -15,7 +15,8 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   override val withProperties = propertyChatacteristics.closed
 
   override val manifest = immutable.HashMap(
-                            "frequency" -> ("java.lang.Integer","opt")
+    "frequency" -> ("java.lang.Integer","opt"),
+  "costPerRun" -> ("java.lang.Double","opt")
                           )
 
   override def isComplete: Boolean = true

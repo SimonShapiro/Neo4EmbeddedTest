@@ -7,8 +7,17 @@ package informationModel
 import java.util.NoSuchElementException
 
 import informationModel.propertyChatacteristics._
+import org.json4s.native
 
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.{immutable, mutable}
+import scala.native
+import native.Serialization.{read, write => swrite}
+
+
+import org.json4s._
+import org.json4s.native.Serialization
+import org.json4s.native.Serialization.{read, write}
 
 trait graphMember {
 
@@ -20,7 +29,9 @@ trait graphMember {
 
   def uuid = java.util.UUID.randomUUID.toString
 
-  def isOfType(t: String) = (getClass.toString.split('.').last == t)
+  def hasType = getClass.toString.split('.').last
+
+  def isOfType(t: String) = (hasType == t)
 
   val manifest: immutable.HashMap[String, (String, String)]
 
@@ -32,9 +43,6 @@ trait graphMember {
 
   def getAllProperties = properties
 
-  import org.json4s._
-  import org.json4s.native.Serialization
-  import org.json4s.native.Serialization.{read, write}
 
   def hasEqualProperties(p: mutable.HashMap[String, Any]): Boolean = {
     if (properties.size != p.size) false
@@ -69,5 +77,15 @@ trait graphMember {
       case propertyChatacteristics.closed => equalIds && hasEqualProperties(gm.getAllProperties)
       case propertyChatacteristics.none   => equalIds
     }
+  }
+
+  def toJson = {
+    implicit val formats = native.Serialization.formats(NoTypeHints)
+    val ser = withProperties match {
+      case propertyChatacteristics.none => ""
+      case _ =>  if (properties.size > 0) swrite(id)
+                    else ""
+    }
+    println(ser)
   }
 }

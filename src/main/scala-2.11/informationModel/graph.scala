@@ -1,5 +1,8 @@
 package informationModel
 
+import org.json4s.native.Serialization
+import org.json4s.{NoTypeHints, native}
+
 import scala.collection.mutable
 
 /**
@@ -55,7 +58,7 @@ class graph {
     sg
   }
 
-  def isSubGraphOf(g: graph) = {  // if all members are also members of g
+  def isSubGraphOf(g: graph): Boolean = {  // if all members are also members of g
     val nodeTest = nodes.map(n => {
       if (g.nodes.contains(n._1)) n._2.isIdenticalTo(n._2.withProperties, g.nodes(n._1))
       else false
@@ -63,8 +66,33 @@ class graph {
     val nodesIn = nodeTest.foldLeft(true)((r, c) => r && c)
     val edgeTest = edges.map(e => {
       if (g.edges.contains(e._1)) e._2.isIdenticalTo(e._2.withProperties, g.edges(e._1))
+      else false
     })
-    val edgesIn = edgeTest.foldLeft(true)((r, c) => r && c.asInstanceOf[Boolean])
+    val edgesIn = edgeTest.foldLeft(true)((r, c) => r && c)
     nodesIn && edgesIn
+  }
+  import native.Serialization.{read, write => swrite}
+
+  def toJson = {
+    import org.json4s._
+    import org.json4s.JsonDSL._
+    import org.json4s.jackson.JsonMethods._
+    implicit val formats = Serialization.formats(NoTypeHints)
+    val nodeMap = nodes.map(n => (n._1,n._2.hasType,n._2.id,n._2.getAllProperties))
+    val edgeMap = edges.map(n => (n._1,n._2.hasType,n._2.id,n._2.from.id,n._2.to.id,n._2.getAllProperties))
+    val json =
+      ("graph" ->
+        ("nodes" -> nodeMap.map(n => ("id" -> n._3) ~ ("type" -> n._2) ~
+          ("properties" -> parse(native.Serialization.write(n._4)))
+        )) ~
+        ("edges" -> edgeMap.map(n => ("id" -> n._3) ~ ("type" -> n._2) ~
+                                      ("from" -> n._4) ~ ("to" -> n._5) ~
+          ("properties" -> parse(native.Serialization.write(n._6)))
+        ))
+      )
+    val rjson = compact(render(json))
+    println(rjson)
+    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
+    rjson
   }
 }
