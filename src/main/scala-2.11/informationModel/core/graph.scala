@@ -1,10 +1,6 @@
 package informationModel.core
 
-import informationModel.core.node
-import org.json4s.JsonDSL._
-import org.json4s.jackson.JsonMethods._
-import org.json4s.native.Serialization
-import org.json4s.{NoTypeHints, native, _}
+import play.api.libs.json.Json
 
 import scala.collection.mutable
 
@@ -76,22 +72,25 @@ class graph {
   }
 
   def toJson = {
-    implicit val formats = Serialization.formats(NoTypeHints)
-    val nodeMap = nodes.map(n => (n._1,n._2.hasType,n._2.id,n._2.getAllProperties))
-    val edgeMap = edges.map(n => (n._1,n._2.hasType,n._2.id,n._2.from.id,n._2.to.id,n._2.getAllProperties))
-    val json =
-      ("graph" ->
-        ("nodes" -> nodeMap.map(n => ("id" -> n._3) ~ ("type" -> n._2) ~
-          ("properties" -> parse(native.Serialization.write(n._4)))
-        )) ~
-        ("edges" -> edgeMap.map(n => ("id" -> n._3) ~ ("type" -> n._2) ~
-                                      ("from" -> n._4) ~ ("to" -> n._5) ~
-          ("properties" -> parse(native.Serialization.write(n._6)))
-        ))
+    val nodesMap = nodes.map(n => n._2.asJson)
+    val edgesMap = edges.map(e => e._2.asJson)
+    val jsonInternal =
+      Json.obj ("graph" -> Json.obj(
+                  "nodes" -> nodesMap,
+                  "edges" -> edgesMap)
       )
-    val rjson = compact(render(json))
-    println(rjson)
-    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
-    rjson
+    val nodesBasedOnJson = (jsonInternal \ "graph" \ "nodes" \ "properties")
+//    val sz = nodesBasedOnJson
+//    nodesBasedOnJson.foreach(p => {
+//      val props = p.children.children
+//      println(p.values.getClass, p.getClass)
+//    })
+    val cls = nodesBasedOnJson.getClass
+    val edgesBasedonJson = jsonInternal \\ "edges"
+//    val rjson = compact(render(json))
+    println("pause")
+//    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
+    jsonInternal.toString
   }
 }
+case class noodle(key: String, ntype: String, id: String, prop: List[String])

@@ -5,7 +5,6 @@
 import informationModel._
 import informationModel.core.graph
 import informationModel.dsl.{system, dataset}
-import org.json4s.{NoTypeHints, native}
 import org.scalatest.FunSuite
 
 import scala.collection.mutable

@@ -7,8 +7,10 @@ package informationModel.core
 import java.util.NoSuchElementException
 
 import informationModel.core.propertyChatacteristics.propertyChatacteristics
-import org.json4s.native.Serialization.{write => swrite}
+import jdk.nashorn.api.scripting.JSObject
+import play.api.libs.json.{JsObject, Json}
 
+import scala.collection.mutable.ArrayBuffer
 import scala.collection.{immutable, mutable}
 
 trait graphMember {
@@ -21,9 +23,9 @@ trait graphMember {
 
   def uuid = java.util.UUID.randomUUID.toString
 
-  def hasType = getClass.toString.split('.').last
+  def getType = getClass.toString.split('.').last
 
-  def isOfType(t: String) = (hasType == t)
+  def isOfType(t: String) = (getType == t)
 
   val manifest: immutable.HashMap[String, (String, String)]
 
@@ -71,4 +73,21 @@ trait graphMember {
     }
   }
 
+  def getPropertiesAsJsonObject = {
+    val map = properties
+    val jStringArray = new ArrayBuffer[String]
+    properties.foreach(p => {
+      jStringArray += {p._2.getClass.toString.split('.').last match {
+        case "Integer"  => """ "%s": %s""".format(p._1,p._2)
+        case "Double"   => """ "%s": %s""".format(p._1,p._2)
+        case "Boolean"  => """ "%s": %s""".format(p._1,p._2)
+        case "String"   => """ "%s": "%s" """.format(p._1,p._2.toString)
+        case _          => throw new IllegalArgumentException("Cannot recognise %s for json".format(p._2.getClass.toString.split('.').last))
+      }}
+    })
+    val jString = "{" + jStringArray.mkString(",") + "}"
+    val pAsJObj = Json.parse(jString)
+    println("pause...",pAsJObj.toString)
+    pAsJObj
+  }
 }
