@@ -79,18 +79,20 @@ class graph {
                   "nodes" -> nodesMap,
                   "edges" -> edgesMap)
       )
-    val nodesBasedOnJson = (jsonInternal \ "graph" \ "nodes" \ "properties")
+    val nodesBasedOnJson = jsonInternal \ "graph" \ "nodes"
 //    val sz = nodesBasedOnJson
 //    nodesBasedOnJson.foreach(p => {
 //      val props = p.children.children
 //      println(p.values.getClass, p.getClass)
 //    })
     val cls = nodesBasedOnJson.getClass
-    val edgesBasedonJson = jsonInternal \\ "edges"
+    val edgesBasedonJson = jsonInternal \ "graph" \ "edges"
 //    val rjson = compact(render(json))
+    val n = nodesBasedOnJson.get(0) \ "id"
+    val i = n.as[String]
+    val p = (nodesBasedOnJson.get(1) \ "properties")
     println("pause")
 //    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
     jsonInternal.toString
   }
 }
-case class noodle(key: String, ntype: String, id: String, prop: List[String])
