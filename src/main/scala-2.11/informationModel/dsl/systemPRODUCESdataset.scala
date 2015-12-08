@@ -1,8 +1,7 @@
 package informationModel.dsl
 
-import informationModel.core.{edge, propertyChatacteristics}
-
-import scala.collection.immutable
+import informationModel.core.edge
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Created by simonshapiro on 23/11/15.
@@ -10,29 +9,40 @@ import scala.collection.immutable
 class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
+  
+  val $type: String = "SystemProducesDataset"
 
-  override val withProperties = propertyChatacteristics.closed
+  private var _frequency: Option[Int] = None
+  def frequency = _frequency
+  def frequency_(frequency: Int) = {_frequency = Option(frequency) ; this}
 
-  override val manifest = immutable.HashMap(
-    "frequency" -> ("java.lang.Integer","opt"),
-  "costPerRun" -> ("java.lang.Double","opt")
-                          )
 
-  override def isComplete: Boolean = true
-
-  def <= (kv:(String, Any)) = {
-    setProperty(withProperties, kv._1,kv._2)
-    this
+  def toJString: String = {
+    val str = new ArrayBuffer[String]
+    str += """ "id": "%s"""".format(id)
+    str += """ "$type": "%s"""".format($type)
+    str += """ "from":  "%s"""".format(from.id)
+    str += """ "to":  "%s"""".format(to.id)
+    _frequency match {
+      case Some(f) => str += """ "frequency": %s""".format(f)
+      case None =>
+    }
+    "{" + str.mkString(",") + "}"
   }
 
-  def deepCopy = {
-    val e = new systemPRODUCESdataset(from.deepCopy, to.deepCopy, id)
-    getAllProperties.foreach(p => e.setProperty(withProperties, p._1,p._2))
+  def deepCopy: systemPRODUCESdataset = {
+    val e = new systemPRODUCESdataset(from, to, id)
+    _frequency match {
+      case Some(f) => e.frequency_(f)
+      case None =>
+    }
     e
   }
 
-  def isIdenticalTo(spd: systemPRODUCESdataset) = {
-    hasSameId(spd) && hasEqualProperties(spd.getAllProperties)
+  override def isEqual(ee: edge) = {
+    val e = ee.asInstanceOf[systemPRODUCESdataset]
+    (id == e.id) && (from == e.from) && (to == e.to)  && (frequency == e.frequency)
   }
 
+  override def isComplete: Boolean = true
 }

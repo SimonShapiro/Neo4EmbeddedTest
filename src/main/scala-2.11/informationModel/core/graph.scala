@@ -1,6 +1,7 @@
 package informationModel.core
 
-import play.api.libs.json.Json
+import informationModel.dsl.system
+import play.api.libs.json._
 
 import scala.collection.mutable
 
@@ -59,21 +60,25 @@ class graph {
 
   def isSubGraphOf(g: graph): Boolean = {  // if all members are also members of g
     val nodeTest = nodes.map(n => {
-      if (g.nodes.contains(n._1)) n._2.isIdenticalTo(n._2.withProperties, g.nodes(n._1))
+      if (g.nodes.contains(n._1)) n._2.isJsonEqual(g.nodes(n._1))   // testing for equality might not be deep enough
       else false
     })
     val nodesIn = nodeTest.foldLeft(true)((r, c) => r && c)
     val edgeTest = edges.map(e => {
-      if (g.edges.contains(e._1)) e._2.isIdenticalTo(e._2.withProperties, g.edges(e._1))
+      if (g.edges.contains(e._1)) e._2.isJsonEqual(g.edges(e._1))
       else false
     })
     val edgesIn = edgeTest.foldLeft(true)((r, c) => r && c)
     nodesIn && edgesIn
   }
 
+  def isEqualTo(g: graph) = {  // if a sub-graph and node size and edge size matches
+    isSubGraphOf(g) && (nodes.size == g.nodes.size) && (edges.size == g.edges.size)
+  }
+
   def toJson = {
-    val nodesMap = nodes.map(n => n._2.asJson)
-    val edgesMap = edges.map(e => e._2.asJson)
+    val nodesMap = nodes.map(n => Json.parse(n._2.toJString))
+    val edgesMap = edges.map(e => Json.parse(e._2.toJString))
     val jsonInternal =
       Json.obj ("graph" -> Json.obj(
                   "nodes" -> nodesMap,
@@ -94,5 +99,31 @@ class graph {
     println("pause")
 //    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
     jsonInternal.toString
+  }
+
+  def this(json: String) {
+    this
+    val jsonInternal = Json.parse(json)
+//    val nodeList = (JsPath \ "graph" \ "nodes" \ "id")(jsonInternal)(0)
+    val customReader: Reads[List[String]] = (__ \ "graph" \ "nodes").read[List[String]]
+    val r = customReader.reads(jsonInternal)
+    r.fold(
+      valid = { res =>
+        val s: List[String] = res
+        s.foreach(i => println(i))
+      },
+      invalid = { errors => println(errors)}
+    )
+    println("end...")
+    /*
+    val edgelist = (jsonInternal \ "graph" \ "edges").get
+    //  get an effective loop through nodes here maybe a map and pass the structure to a node factory
+//    val n = nodeList.as[Array[Node]]
+    implicit val nodesReader: Reads[(String)] =
+        (JsPath \ "id").read[String]
+    val ns = nodeList.as[List[String]]
+    val nId = (nodeList.head.get \ "id").get.as[String]
+*/
+    println("pause")
   }
 }
