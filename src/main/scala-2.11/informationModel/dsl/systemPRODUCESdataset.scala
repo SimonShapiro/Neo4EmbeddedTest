@@ -45,4 +45,19 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   }
 
   override def isComplete: Boolean = true
+
+  def toDyNetMLAsJString: String = {
+    val str = new ArrayBuffer[String]
+    val propStr = new ArrayBuffer[String]
+    str += """ "id": "%s"""".format(id)
+    str += """ "$type": "%s"""".format($type)
+    str += """ "from":  "%s"""".format(from.id)
+    str += """ "to":  "%s"""".format(to.id)
+    _frequency match {
+      case Some(i) => propStr += propString[Int]("name",i)
+      case None =>
+    }
+    str += """ "properties": [""" + propStr.mkString(",") + "]"
+    "{" + str.mkString(",") + "}"
+  }
 }

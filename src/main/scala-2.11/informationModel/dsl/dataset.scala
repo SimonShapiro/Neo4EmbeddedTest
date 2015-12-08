@@ -1,6 +1,7 @@
 package informationModel.dsl
 
 import informationModel.core.{node}
+import play.api.libs.json.Json
 
 import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
@@ -31,7 +32,7 @@ case class dataset(val uid: String = null) extends node {
       case None =>
     }
     _description match {
-      case Some(i) => str += """ "description": %s""".format(i)
+      case Some(i) => str += """ "description": "%s""".format(i)
       case None =>
     }
     "{" + str.mkString(",") + "}"
@@ -53,5 +54,22 @@ case class dataset(val uid: String = null) extends node {
   override def isEqual(dd: node) = {
     val d = dd.asInstanceOf[dataset]
     (id == d.id) && (name == d.name) && (description == d.description)
+  }
+
+  def toDyNetMLAsJString: String = {
+    val str = new ArrayBuffer[String]
+    val propStr = new ArrayBuffer[String]
+    str += """ "id": "%s"""".format(id)
+    str += """ "$type": "%s"""".format($type)
+    _name match {
+      case Some(st) => propStr += propString[String]("name",st)
+      case None =>
+    }
+    _description match {
+      case Some(st) => propStr += propString[String]("description", st)
+      case None =>
+    }
+    str += """ "properties": [""" + propStr.mkString(",") + "]"
+    "{" + str.mkString(",") + "}"
   }
 }

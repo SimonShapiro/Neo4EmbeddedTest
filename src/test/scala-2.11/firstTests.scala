@@ -6,7 +6,8 @@ import informationModel._
 import informationModel.core.graph
 import informationModel.dsl.{system, dataset}
 import org.scalatest.FunSuite
-import play.api.libs.json.Json
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 import scala.collection.mutable
 import scala.native
@@ -146,24 +147,7 @@ class firstTests extends FunSuite {
       println("End: A graph can return the sub-graph based on everything about a particular type of node")
     }
 
-    test("graph should have a toJson string representation") {
-      val g = new graph
-      val s1 = system("S1").name_("System 1")
-      val s2 = system("S2")
-      val ds = dataset("DS").name_("Main Dataset")
-      g <= s1
-      g <= s2
-      g <=> s1.CONNECTS(s2,"S1_S2")
-      g <=> s2.PRODUCES(ds,"S2_DS")
-      val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","name":"Main Dataset"},{"id":"S1","$type":"System","name":"System 1"},{"id":"S2","$type":"System"}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS"},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2"}]}}"""
-      val json = g.toJson
-      assert(json == expectedResult)
-      val jsonObj = Json.parse(json)
-      val nodeObj = jsonObj \ "graph" \ "nodes"
-      println("End: graph should have a toJson string representation")
-    }
-
-  test("a graph should be built from a Json string representation") {
+  test("graph should have a toJson string representation") {
     val g = new graph
     val s1 = system("S1").name_("System 1")
     val s2 = system("S2")
@@ -172,7 +156,40 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS")
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","name":"Main Dataset"},{"id":"S1","$type":"System","name":"System 1"},{"id":"S2","$type":"System"}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS"},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2"}]}}"""
     val json = g.toJson
+    assert(json == expectedResult)
+    val jsonObj = Json.parse(json)
+    val nodeObj = jsonObj \ "graph" \ "nodes"
+    println("End: graph should have a toJson string representation")
+  }
+
+  test("graph should have a toJsonDyNetML style string representation") {
+    val g = new graph
+    val s1 = system("S1").name_("System 1")
+    val s2 = system("S2")
+    val ds = dataset("DS").name_("Main Dataset").description_("A description of the main dataset")
+    g <= s1
+    g <= s2
+    g <=> s1.CONNECTS(s2,"S1_S2")
+    g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"System","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"System","properties":[]}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS","properties":[{"name":"name","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2","properties":[]}]}}"""
+    val json = g.toJsonAsDynetML
+    println(json)
+    assert(json == expectedResult)
+    println("End: graph should have a toJsonDyNetML style string representation")
+  }
+
+  test("a graph should be built from a Json string representation") {
+    val g = new graph
+    val s1 = system("S1").name_("System 1")
+    val s2 = system("S2")
+    val ds = dataset("DS").name_("Main Dataset").description_("A descritpion of the main dataset")
+    g <= s1
+    g <= s2
+    g <=> s1.CONNECTS(s2,"S1_S2")
+    g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
+    val json = g.toJsonAsDynetML
     val g2 = new graph(json)
     assert(g2.isEqualTo(g))
   }

@@ -34,4 +34,7 @@ abstract class graphMember {
     val gmStr = gm.toJString
     gm.toJString.equals(this.toJString)
   }
+
+  def propString[T](nm: String, v:T): String = """ {"name": "%s", "type": "%s", "value": "%s"}""".format(nm, v.getClass.toString.split('.').last, v)
+
 }

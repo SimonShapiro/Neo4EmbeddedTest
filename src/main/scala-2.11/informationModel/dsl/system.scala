@@ -63,4 +63,21 @@ case class system(val uid: String = null) extends node {
     val d = n.asInstanceOf[system]
     (id == d.id) && (name == d.name) && (description == d.description)
   }
+
+  def toDyNetMLAsJString: String = {
+    val str = new ArrayBuffer[String]
+    val propStr = new ArrayBuffer[String]
+    str += """ "id": "%s"""".format(id)
+    str += """ "$type": "%s"""".format($type)
+    _name match {
+      case Some(st) => propStr += propString[String]("name",st)
+      case None =>
+    }
+    _description match {
+      case Some(st) => propStr += propString[String]("description", st)
+      case None =>
+    }
+    str += """ "properties": [""" + propStr.mkString(",") + "]"
+    "{" + str.mkString(",") + "}"
+  }
 }

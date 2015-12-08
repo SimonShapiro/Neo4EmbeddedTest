@@ -1,7 +1,7 @@
 package informationModel.core
 
-import informationModel.dsl.system
 import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
 import scala.collection.mutable
 
@@ -81,49 +81,60 @@ class graph {
     val edgesMap = edges.map(e => Json.parse(e._2.toJString))
     val jsonInternal =
       Json.obj ("graph" -> Json.obj(
-                  "nodes" -> nodesMap,
-                  "edges" -> edgesMap)
+        "nodes" -> nodesMap,
+        "edges" -> edgesMap)
       )
     val nodesBasedOnJson = jsonInternal \ "graph" \ "nodes"
-//    val sz = nodesBasedOnJson
-//    nodesBasedOnJson.foreach(p => {
-//      val props = p.children.children
-//      println(p.values.getClass, p.getClass)
-//    })
+    //    val sz = nodesBasedOnJson
+    //    nodesBasedOnJson.foreach(p => {
+    //      val props = p.children.children
+    //      println(p.values.getClass, p.getClass)
+    //    })
     val cls = nodesBasedOnJson.getClass
     val edgesBasedonJson = jsonInternal \ "graph" \ "edges"
-//    val rjson = compact(render(json))
+    //    val rjson = compact(render(json))
     val n = nodesBasedOnJson.get(0) \ "id"
     val i = n.as[String]
     val p = (nodesBasedOnJson.get(1) \ "properties")
     println("pause")
-//    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
+    //    val tGraph = parse(rjson)  // defensive parsing to ensure json created correctly
+    jsonInternal.toString
+  }
+
+  def toJsonAsDynetML = {
+    val nodesMap = nodes.map(n => Json.parse(n._2.toDyNetMLAsJString))
+    val edgesMap = edges.map(e => Json.parse(e._2.toDyNetMLAsJString))
+    val jsonInternal =
+      Json.obj ("graph" -> Json.obj(
+        "nodes" -> nodesMap,
+        "edges" -> edgesMap)
+      )
     jsonInternal.toString
   }
 
   def this(json: String) {
     this
     val jsonInternal = Json.parse(json)
-//    val nodeList = (JsPath \ "graph" \ "nodes" \ "id")(jsonInternal)(0)
-    val customReader: Reads[List[String]] = (__ \ "graph" \ "nodes").read[List[String]]
-    val r = customReader.reads(jsonInternal)
-    r.fold(
-      valid = { res =>
-        val s: List[String] = res
-        s.foreach(i => println(i))
-      },
-      invalid = { errors => println(errors)}
-    )
-    println("end...")
-    /*
-    val edgelist = (jsonInternal \ "graph" \ "edges").get
-    //  get an effective loop through nodes here maybe a map and pass the structure to a node factory
-//    val n = nodeList.as[Array[Node]]
-    implicit val nodesReader: Reads[(String)] =
-        (JsPath \ "id").read[String]
-    val ns = nodeList.as[List[String]]
-    val nId = (nodeList.head.get \ "id").get.as[String]
-*/
+    //  Process json into scala structures
+
+    implicit  val propReads: Reads[propJson] = (
+      (JsPath \ "name").read[String] and  // readNullable?
+      (JsPath \ "type").read[String] and
+      (JsPath \ "value").read[String]
+      )(propJson.apply _)
+
+    implicit val nodeReads: Reads[nodeJson] = (
+      (JsPath \ "id").read[String]   and // readNullable?
+      (JsPath \ "$type").read[String] and
+      (JsPath \ "properties").read[List[propJson]]
+    )(nodeJson.apply _)
+
+    val res = (jsonInternal \ "graph" \ "nodes").as[List[nodeJson]]
+    //  Form graph from jsonInternal
     println("pause")
   }
 }
+
+case class nodeJson(id: String, $type: String, properties: List[propJson])
+
+case class propJson(name: String, type$: String, value: String)

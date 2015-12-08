@@ -33,5 +33,16 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
     val e = ee.asInstanceOf[systemCONNECTSsystem]
     (id == e.id) && (from == e.from) && (to == e.to)
   }
+
+  def toDyNetMLAsJString: String = {
+    val str = new ArrayBuffer[String]
+    val propStr = new ArrayBuffer[String]
+    str += """ "id": "%s"""".format(id)
+    str += """ "$type": "%s"""".format($type)
+    str += """ "from":  "%s"""".format(from.id)
+    str += """ "to":  "%s"""".format(to.id)
+    str += """ "properties": [""" + propStr.mkString(",") + "]"
+    "{" + str.mkString(",") + "}"
+  }
 }
 
