@@ -135,6 +135,6 @@ class graph {
   }
 }
 
-case class nodeJson(id: String, $type: String, properties: List[propJson])
 
-case class propJson(name: String, type$: String, value: String)
+
+
