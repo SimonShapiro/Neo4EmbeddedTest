@@ -54,7 +54,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     _frequency match {
-      case Some(i) => propStr += propString[Int]("name",i)
+      case Some(i) => propStr += propString[Int]("frequency",i)
       case None =>
     }
     str += """ "properties": [""" + propStr.mkString(",") + "]"

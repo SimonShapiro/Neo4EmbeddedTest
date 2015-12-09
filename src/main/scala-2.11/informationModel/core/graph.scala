@@ -1,5 +1,6 @@
 package informationModel.core
 
+import informationModel.dsl.Dsl
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -129,8 +130,21 @@ class graph {
       (JsPath \ "properties").read[List[propJson]]
     )(nodeJson.apply _)
 
-    val res = (jsonInternal \ "graph" \ "nodes").as[List[nodeJson]]
+    implicit val edgeReads: Reads[edgeJson] = (
+      (JsPath \ "id").read[String]   and // readNullable?
+      (JsPath \ "$type").read[String] and
+      (JsPath \ "from").read[String] and
+      (JsPath \ "to").read[String] and
+      (JsPath \ "properties").read[List[propJson]]
+    )(edgeJson.apply _)
+
+    val nodeRes = (jsonInternal \ "graph" \ "nodes").as[List[nodeJson]]
+    val edgeRes = (jsonInternal \ "graph" \ "edges").as[List[edgeJson]]
     //  Form graph from jsonInternal
+    val nodeList = nodeRes.map(n => Dsl.buildNode(n))
+    nodeList.foreach(n => this <= n)
+    val edgeList = edgeRes.map(e => Dsl.buildEdge(e, nodeList))
+    edgeList.foreach(e => this <=> e)
     println("pause")
   }
 }
