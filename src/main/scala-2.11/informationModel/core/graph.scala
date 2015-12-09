@@ -102,7 +102,7 @@ class graph {
     jsonInternal.toString
   }
 
-  def toJsonAsDynetML = {
+  def toJsonAsDyNetML = {
     val nodesMap = nodes.map(n => Json.parse(n._2.toDyNetMLAsJString))
     val edgesMap = edges.map(e => Json.parse(e._2.toDyNetMLAsJString))
     val jsonInternal =

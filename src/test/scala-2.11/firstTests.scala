@@ -3,7 +3,7 @@
  */
 
 import informationModel._
-import informationModel.core.graph
+import informationModel.core.{GraphReader, GraphWriter, graph}
 import informationModel.dsl.{system, dataset}
 import org.scalatest.FunSuite
 import play.api.libs.json._
@@ -174,13 +174,13 @@ class firstTests extends FunSuite {
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
     val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"System","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"System","properties":[]}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2","properties":[]}]}}"""
-    val json = g.toJsonAsDynetML
+    val json = g.toJsonAsDyNetML
     println(json)
     assert(json == expectedResult)
     println("End: graph should have a toJsonDyNetML style string representation")
   }
 
-  test("a graph should be built from a Json string representation") {
+  test("a graph should be built from a toJsonDyNetML string representation") {
     val g = new graph
     val s1 = system("S1").name_("System 1")
     val s2 = system("S2")
@@ -189,8 +189,69 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
-    val json = g.toJsonAsDynetML
+    val json = g.toJsonAsDyNetML
     val g2 = new graph(json)
     assert(g2.isEqualTo(g))
+    println("End: graph should be built from a toJsonDyNetML string representation")
+  }
+
+  test("A graph should be persisted to a named directory.  " +
+    "Each time it is persisted, it should be stored under a gmt time code") {
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
+    val fName = "mainGraph"
+    val fPath = path + fName
+
+    val g = new graph
+    val s1 = system("S1").name_("System 1")
+    val s2 = system("S2")
+    val ds = dataset("DS").name_("Main Dataset").description_("A descritpion of the main dataset")
+    g <= s1
+    g <= s2
+    g <=> s1.CONNECTS(s2,"S1_S2")
+    g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
+
+    val fullFileName = GraphWriter.writeFile(g, fPath)
+    val datetimePattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z".r
+//    val datetimePattern = "[0-9]{4}".r
+
+    assert(fullFileName match {
+      case Some (s) => true
+      case None =>  false
+    })
+
+    val fn = fullFileName.get.split('/').last
+    println(fn, fn.getClass)
+    assert(datetimePattern.findFirstIn(fn) match {
+      case Some(m) => true
+      case None => false
+    })
+
+    println("End: file persistence")
+  }
+
+  test("Reconstitute a graph from a .dnml file") {
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
+    val fName = "mainGraph"
+    val fPath = path + fName
+
+    val g = new graph
+    val s1 = system("S1").name_("System 1")
+    val s2 = system("S2")
+    val ds = dataset("DS").name_("Main Dataset").description_("A descritpion of the main dataset")
+    g <= s1
+    g <= s2
+    g <=> s1.CONNECTS(s2,"S1_S2")
+    g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
+
+    val fullFileName = GraphWriter.writeFile(g, fPath)
+    val g2 = fullFileName match {
+      case Some (s) => {
+        println(s)
+        GraphReader.readFile(fPath + "/", s.split('/').last)
+      }
+      case None => new graph()
+    }
+    assert(g2.isEqualTo(g))
+    println("End: Reconstitute a graph from a .dnml file")
   }
 }
