@@ -198,8 +198,7 @@ class firstTests extends FunSuite {
   test("A graph should be persisted to a named directory.  " +
     "Each time it is persisted, it should be stored under a gmt time code") {
     val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
-    val fName = "mainGraph"
-    val fPath = path + fName
+    val gName = "mainGraph"
 
     val g = new graph
     val s1 = system("S1").name_("System 1")
@@ -210,7 +209,7 @@ class firstTests extends FunSuite {
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
 
-    val fullFileName = GraphWriter.writeFile(g, fPath)
+    val fullFileName = GraphWriter.writeFile(g, gName, path)
     val datetimePattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z".r
 //    val datetimePattern = "[0-9]{4}".r
 
@@ -231,8 +230,7 @@ class firstTests extends FunSuite {
 
   test("Reconstitute a graph from a .dnml file") {
     val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
-    val fName = "mainGraph"
-    val fPath = path + fName
+    val gName = "mainGraph"
 
     val g = new graph
     val s1 = system("S1").name_("System 1")
@@ -243,15 +241,45 @@ class firstTests extends FunSuite {
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
 
-    val fullFileName = GraphWriter.writeFile(g, fPath)
+    val fullFileName = GraphWriter.writeFile(g, gName, path)
     val g2 = fullFileName match {
       case Some (s) => {
         println(s)
-        GraphReader.readFile(fPath + "/", s.split('/').last)
+        GraphReader.readFile(gName, s.split('/').last, path)
       }
       case None => new graph()
     }
     assert(g2.isEqualTo(g))
     println("End: Reconstitute a graph from a .dnml file")
+  }
+
+  test("Two graphs can be merged together using g1.mergeInto(g2)") {
+    val g1 = new graph()
+    val g2 = new graph()
+    g2 <= system("Two")
+    val n1 = system("One")
+    val n3 = system("Three")
+    g1 <= n1
+    g1 <= n3
+    g1 <=> n1.CONNECTS(n3)
+
+    g2 <=> n1.CONNECTS(n3)
+
+    val g3 = g1.mergeInto(g2)
+    val g4 = g2.mergeInto(g1)
+
+    assert(g1.isSubGraphOf(g3))
+    assert(g2.isSubGraphOf(g3))
+    assert(g3.isEqualTo(g4))
+
+    n3.name_("Node 3")
+
+    assert(true) // g3 yields immutable copies of g1 and g2  ???  Why is cross linking bad ???
+
+    println("End: Two graphs can be merged together using g1.mergeInto(g2)")
+  }
+
+  test("Graphs retrieved from the persistance mechanism are independent, until merged") {
+    assert(true)
   }
 }

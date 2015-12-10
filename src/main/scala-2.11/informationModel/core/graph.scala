@@ -147,6 +147,13 @@ class graph {
     edgeList.foreach(e => this <=> e)
     println("pause")
   }
+
+  def mergeInto(g: graph): graph = {
+    val newGraph = g.deepCopy
+    nodes.foreach(n => newGraph <= n._2)  // potential deepCopy ???
+    edges.foreach(e => newGraph <=> e._2)
+    newGraph
+  }
 }
 
 
