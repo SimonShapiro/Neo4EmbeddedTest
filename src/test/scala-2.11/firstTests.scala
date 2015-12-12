@@ -4,7 +4,7 @@
 
 import informationModel._
 import informationModel.core.{GraphReader, GraphWriter, graph}
-import informationModel.dsl.{system, dataset}
+import informationModel.dsl.{systemCONNECTSsystem, system, dataset}
 import org.scalatest.FunSuite
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -265,21 +265,89 @@ class firstTests extends FunSuite {
 
     g2 <=> n1.CONNECTS(n3)
 
-    val g3 = g1.mergeInto(g2)
-    val g4 = g2.mergeInto(g1)
+    val ret1 = g1.merge(g2) match {
+      case Right(x) => x
+      case Left(x) =>  throw new IllegalStateException("Merge clashes:\n\t%s".format(x.mkString("\n")))
+    }
+    val g3 = ret1.asInstanceOf[graph]
+
+    val ret2 = g2.merge(g1) match {
+      case Right(x) => x
+      case Left(x) =>  throw new IllegalStateException("Merge clashes:\n\t%s".format(x.mkString("\n")))
+    }
+    val g4 = ret2.asInstanceOf[graph]
 
     assert(g1.isSubGraphOf(g3))
     assert(g2.isSubGraphOf(g3))
     assert(g3.isEqualTo(g4))
 
-    n3.name_("Node 3")
-
-    assert(true) // g3 yields immutable copies of g1 and g2  ???  Why is cross linking bad ???
-
     println("End: Two graphs can be merged together using g1.mergeInto(g2)")
   }
 
   test("Graphs retrieved from the persistance mechanism are independent, until merged") {
-    assert(true)
+
+    val g1 = new graph()
+    val g2 = new graph()
+    g2 <= system("Two")
+    val n1 = system("One")
+    val n3 = system("Three")
+    g1 <= n1
+    g1 <= n3
+    g1 <=> n1.CONNECTS(n3,"n1_n3")
+
+    g2 <=> n1.CONNECTS(n3,"n1_n3")
+
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
+    val g1Name = "G1"
+    val g2Name = "G2"
+    
+    val g1FileName = GraphWriter.writeFile(g1, g1Name, path)
+    val g2FileName = GraphWriter.writeFile(g2, g2Name, path)
+    val g1too = GraphReader.readFile(g1Name, g1FileName.get.split('/').last, path)
+    val g2too = GraphReader.readFile(g2Name, g2FileName.get.split('/').last, path)
+
+    g1too.getNode("Three").asInstanceOf[system].name_("fred")  // change the value of a single node in the g1too node "Three"
+    g1too.getEdge("n1_n3").asInstanceOf[systemCONNECTSsystem].description_("n1 connects to n3 making it very interesting")
+
+    assert(g1too.getNode("Three").asInstanceOf[system].name !=
+           g2too.getNode("Three").asInstanceOf[system].name)
+    assert(g2too.getNode("Three").asInstanceOf[system].name == None)
+
+    val ret1 = g1too.merge(g2too)
+    ret1 match {
+      case Right(x) =>
+      case Left(x) => {
+        assert(x(0) == "Merge clash on node: Three")
+        assert(x(1) == "Merge clash on edge: n1_n3")
+      }
+    }
+    val ret2 = g2too.merge(g1too)
+  }
+
+  test("f.mergeWithAndUpdateBy(g) should have g overright f where appropriate") {
+    val g1 = new graph()
+    val g2 = new graph()
+    g2 <= system("Two")
+    val n1 = system("One")
+    val n3 = system("Three")
+    g1 <= n1
+    g1 <= n3
+    g1 <=> n1.CONNECTS(n3,"n1_n3")
+
+    g2 <=> n1.CONNECTS(n3,"n1_n3")
+
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
+    val g1Name = "G1"
+    val g2Name = "G2"
+
+    val g1FileName = GraphWriter.writeFile(g1, g1Name, path)
+    val g2FileName = GraphWriter.writeFile(g2, g2Name, path)
+    val g1too = GraphReader.readFile(g1Name, g1FileName.get.split('/').last, path)
+    val g2too = GraphReader.readFile(g2Name, g2FileName.get.split('/').last, path)
+
+    g1too.getNode("Three").asInstanceOf[system].name_("fred")  // change the value of a single node in the g1too node "Three"
+    g1too.getEdge("n1_n3").asInstanceOf[systemCONNECTSsystem].description_("n1 connects to n3 making it very interesting")
+    val g3 = g2too.mergeWithAndUpdateBy(g1too)
+    assert(g3.asInstanceOf[graph].getNode("Three").asInstanceOf[system].name == Some("fred"))
   }
 }

@@ -148,12 +148,39 @@ class graph {
     println("pause")
   }
 
-  def mergeInto(g: graph): graph = {
+  def merge(g: graph): Either[mutable.ArrayBuffer[String], graph] = {
     val newGraph = g.deepCopy
-    nodes.foreach(n => newGraph <= n._2)  // potential deepCopy ???
-    edges.foreach(e => newGraph <=> e._2)
+    val mergeClashes = new mutable.ArrayBuffer[String]
+
+    nodes.foreach(n => {
+      if (g.nodes.contains(n._1)) {
+        val targetNode = g.nodes(n._1)
+        if(n._2.isEqual(targetNode)) newGraph <= n._2
+        else mergeClashes += "Merge clash on node: %s".format(n._1)
+      }
+      else newGraph <= n._2
+    })
+
+    edges.foreach(e => {
+      if (g.edges.contains(e._1)) {
+        val targetEdge = g.edges(e._1)
+        if(e._2.isEqual(targetEdge)) newGraph <=> e._2
+        else mergeClashes += "Merge clash on edge: %s".format(e._1)
+      }
+      else newGraph <=> e._2
+    })
+
+    if (mergeClashes.size == 0) Right(newGraph)
+    else Left(mergeClashes)
+  }
+
+  def mergeWithAndUpdateBy(g: graph): graph = {
+    val newGraph = deepCopy
+    g.nodes.foreach(n => newGraph <= n._2)  // potential deepCopy ???
+    g.edges.foreach(e => newGraph <=> e._2)
     newGraph
   }
+
 }
 
 
