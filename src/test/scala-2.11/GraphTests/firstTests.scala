@@ -1,16 +1,13 @@
+package GraphTests
+
 /**
  * Created by simonshapiro on 26/11/15.
  */
 
-import informationModel._
 import informationModel.core.{GraphReader, GraphWriter, graph}
-import informationModel.dsl.{systemCONNECTSsystem, system, dataset}
+import informationModel.dsl.{dataset, system, systemCONNECTSsystem}
 import org.scalatest.FunSuite
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
-
-import scala.collection.mutable
-import scala.native
 
 class firstTests extends FunSuite {
 
@@ -321,10 +318,10 @@ class firstTests extends FunSuite {
         assert(x(1) == "Merge clash on edge: n1_n3")
       }
     }
-    val ret2 = g2too.merge(g1too)
+    println("End: Graphs retrieved from the persistance mechanism are independent, until merged")
   }
 
-  test("f.mergeWithAndUpdateBy(g) should have g overright f where appropriate") {
+  test("f.mergeWithAndUpdateBy(g) should have g overwrite f where appropriate") {
     val g1 = new graph()
     val g2 = new graph()
     g2 <= system("Two")
@@ -349,5 +346,6 @@ class firstTests extends FunSuite {
     g1too.getEdge("n1_n3").asInstanceOf[systemCONNECTSsystem].description_("n1 connects to n3 making it very interesting")
     val g3 = g2too.mergeWithAndUpdateBy(g1too)
     assert(g3.asInstanceOf[graph].getNode("Three").asInstanceOf[system].name == Some("fred"))
+    println("End: f.mergeWithAndUpdateBy(g) should have g overwrite f where appropriate")
   }
 }

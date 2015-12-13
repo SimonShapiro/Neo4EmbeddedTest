@@ -1,6 +1,6 @@
 package informationModel.core
 
-import informationModel.dsl.Dsl
+import informationModel.dsl.Dsl    // !!!! Unfortunate dependency
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -40,6 +40,7 @@ class graph {
   def getNode(k: String) = {
     nodes(k)
   }
+
   def getEdge(k: String) = {
     edges(k)
   }
