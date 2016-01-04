@@ -13,7 +13,7 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
 
   def isComplete: Boolean = true
 
-  val $type: String = "SystemConnectsSystem"
+  val _type: String = "SystemConnectsSystem"
 
   private var _description: Option[String] = None
   def description = _description
@@ -22,7 +22,7 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     _description match {
@@ -46,7 +46,7 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     _description match {

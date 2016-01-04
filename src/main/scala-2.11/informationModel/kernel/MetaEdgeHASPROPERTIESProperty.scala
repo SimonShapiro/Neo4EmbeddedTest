@@ -11,12 +11,12 @@ class MetaEdgeHASPROPERTIESProperty(from: MetaEdge, to: Property, uid: String = 
 
   val id = if (uid != null) uid else uuid
   
-  val $type: String = "MetaEdgeHASPROPERTIESProperty"
+  val _type: String = "MetaEdgeHASPROPERTIESProperty"
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     "{" + str.mkString(",") + "}"
@@ -38,7 +38,7 @@ class MetaEdgeHASPROPERTIESProperty(from: MetaEdge, to: Property, uid: String = 
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     str += """ "properties": [""" + propStr.mkString(",") + "]"

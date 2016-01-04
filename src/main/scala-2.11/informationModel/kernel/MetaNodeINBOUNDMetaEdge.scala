@@ -11,12 +11,12 @@ class MetaNodeINBOUNDMetaEdge(from: MetaNode, to: MetaEdge, uid: String = null) 
 
   val id = if (uid != null) uid else uuid
   
-  val $type: String = "MetaNodeINBOUNDMetaEdge"
+  val _type: String = "MetaNodeINBOUNDMetaEdge"
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     "{" + str.mkString(",") + "}"
@@ -38,7 +38,7 @@ class MetaNodeINBOUNDMetaEdge(from: MetaNode, to: MetaEdge, uid: String = null) 
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     str += """ "properties": [""" + propStr.mkString(",") + "]"

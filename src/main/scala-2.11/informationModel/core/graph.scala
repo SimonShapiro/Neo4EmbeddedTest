@@ -111,7 +111,7 @@ class graph {
         "nodes" -> nodesMap,
         "edges" -> edgesMap)
       )
-    jsonInternal.toString
+    jsonInternal //  .toString
   }
 
   def this(json: String) {

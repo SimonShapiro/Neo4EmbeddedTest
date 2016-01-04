@@ -12,7 +12,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case class dataset(val uid: String = null) extends node {
   val id = if (uid != null) uid else uuid
-  val $type: String = "Dataset"
+  val _type: String = "Dataset"
   def isComplete = true
 
   private var _name: Option[String] = None
@@ -26,7 +26,7 @@ case class dataset(val uid: String = null) extends node {
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     _name match {
       case Some(st) => str += """ "name": "%s"""".format(st)
       case None =>
@@ -60,7 +60,7 @@ case class dataset(val uid: String = null) extends node {
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     _name match {
       case Some(st) => propStr += propString[String]("name",st)
       case None =>

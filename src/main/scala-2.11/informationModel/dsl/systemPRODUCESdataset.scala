@@ -10,7 +10,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
 
   val id = if (uid != null) uid else uuid
   
-  val $type: String = "SystemProducesDataset"
+  val _type: String = "SystemProducesDataset"
 
   private var _frequency: Option[Int] = None
   def frequency = _frequency
@@ -20,7 +20,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     _frequency match {
@@ -50,7 +50,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format($type)
+    str += """ "$type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     _frequency match {

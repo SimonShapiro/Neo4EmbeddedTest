@@ -17,9 +17,9 @@ abstract class graphMember {
 
   def uuid = java.util.UUID.randomUUID.toString
 
-  val $type: String
+  val _type: String
 
-  def getType = $type
+  def getType = _type
 
   def isOfType(t: String) = (getType == t)
 

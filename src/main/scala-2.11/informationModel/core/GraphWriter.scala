@@ -18,7 +18,7 @@ object GraphWriter {  // if the graphName does not exist it should be created
 
     val fullFileName = filePath + graphName + "/" + new DateTime().toString
 
-    val gString = Json.prettyPrint(Json.parse(g.toJsonAsDyNetML))
+    val gString = Json.prettyPrint(Json.parse(g.toJsonAsDyNetML.toString))
     val dir = new File(filePath)
     try {
       val pw = new PrintWriter(new File(fullFileName + ".dnml"))

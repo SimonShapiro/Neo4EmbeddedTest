@@ -7,7 +7,7 @@ import informationModel.core.{edge, edgeJson, node, nodeJson}
  */
 object Dsl {
   def buildNode(n: nodeJson): node = {
-    n.$type match {
+    n._type match {
       case "System" => {
         val s = system(n.id)
         n.properties.foreach(p => {
@@ -30,7 +30,7 @@ object Dsl {
         })
         d
       }
-      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(n.id, n.$type))
+      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(n.id, n._type))
     }
   }
   def buildEdge(e: edgeJson, nodes: List[node]): edge = {

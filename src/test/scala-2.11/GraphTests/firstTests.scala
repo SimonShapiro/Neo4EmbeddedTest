@@ -171,7 +171,7 @@ class firstTests extends FunSuite {
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
     val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"System","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"System","properties":[]}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2","properties":[]}]}}"""
-    val json = g.toJsonAsDyNetML
+    val json = g.toJsonAsDyNetML.toString
     println(json)
     assert(json == expectedResult)
     println("End: graph should have a toJsonDyNetML style string representation")
@@ -186,7 +186,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
-    val json = g.toJsonAsDyNetML
+    val json = g.toJsonAsDyNetML.toString
     val g2 = new graph(json)
     assert(g2.isEqualTo(g))
     println("End: graph should be built from a toJsonDyNetML string representation")
