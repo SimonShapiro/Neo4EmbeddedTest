@@ -7,4 +7,5 @@ case class edgeJson(id: String,
                     $type: String,
                     from: String,
                     to: String,
+                    associationNode: String,
                     properties: List[propJson])

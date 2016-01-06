@@ -16,7 +16,6 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   def frequency = _frequency
   def frequency_(frequency: Int) = {_frequency = Option(frequency) ; this}
 
-
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)

@@ -1,7 +1,9 @@
 package GraphTests
 
 import informationModel.KernelModel
-import informationModel.core.{DslGenerator, GraphWriter}
+import informationModel.core.{GraphReader, graph, DslGenerator, GraphWriter}
+import informationModel.dsl.{dataset, system}
+import informationModel.kernel.metaDsl
 import org.scalatest.FunSuite
 
 import scala.collection.mutable
@@ -45,6 +47,24 @@ class KernelTest extends FunSuite {
   }
   test("Generate dsl.scala from kernal model and ttemplate file") {
     DslGenerator.generateDsl("DSL.ftl", KernelModel.model)
-    assert(false)
+    assert(false)  //forced fail
   }
+  test("Reconstitute the kernel from a .dnml file") {
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/Kernel/"
+    val gName = "mainGraph"
+
+    val g = KernelModel.model
+    val fullFileName = GraphWriter.writeFile(g, gName, path)
+    val g2 = fullFileName match {
+      case Some (s) => {
+        println(s)
+        GraphReader.readFileWithDsl(gName, s.split('/').last, path, metaDsl)
+      }
+      case None => new graph()
+    }
+    assert(g2.isEqualTo(g))
+    println("End: Reconstitute kernel from a .dnml file")
+  }
+
+
 }

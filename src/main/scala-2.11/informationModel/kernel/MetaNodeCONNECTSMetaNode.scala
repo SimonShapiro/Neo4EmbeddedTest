@@ -1,6 +1,6 @@
 package informationModel.kernel
 
-import informationModel.core.edge
+import informationModel.core.{node, edge}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -14,15 +14,7 @@ class MetaNodeCONNECTSMetaNode(from: MetaNode, to: MetaNode, uid: String = null)
   val _type: String = "MetaNodeCONNECTSMetaNode"
 
   def toJString: String = {
-    val str = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
-    str +=  """ "associationNode":  "%s"""".format(associatedWith match {
-      case Some(x) => x.id
-      case None => "[]"
-    })
+    val str = header
     "{" + str.mkString(",") + "}"
   }
 
@@ -39,16 +31,9 @@ class MetaNodeCONNECTSMetaNode(from: MetaNode, to: MetaNode, uid: String = null)
   override def isComplete: Boolean = true
 
   def toDyNetMLAsJString: String = {
-    val str = new ArrayBuffer[String]
+//  val str
+    val str = header
     val propStr = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
-    str +=  """ "associationNode":  "%s"""".format(associatedWith match {
-      case Some(x) => x.id
-      case None => "[]"
-    })
     str += """ "properties": [""" + propStr.mkString(",") + "]"
     "{" + str.mkString(",") + "}"
   }

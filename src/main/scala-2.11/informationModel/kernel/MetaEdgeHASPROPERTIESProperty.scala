@@ -7,18 +7,14 @@ import scala.collection.mutable.ArrayBuffer
 /**
  * Created by simonshapiro on 23/11/15.
  */
-class MetaEdgeHASPROPERTIESProperty(from: MetaEdge, to: Property, uid: String = null) extends edge(from, to) {
+class MetaEdgeHASPROPERTIESProperty(from: MetaEdgeNode, to: Property, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
   
   val _type: String = "MetaEdgeHASPROPERTIESProperty"
 
   def toJString: String = {
-    val str = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
+    val str = header
     "{" + str.mkString(",") + "}"
   }
 
@@ -35,12 +31,8 @@ class MetaEdgeHASPROPERTIESProperty(from: MetaEdge, to: Property, uid: String = 
   override def isComplete: Boolean = true
 
   def toDyNetMLAsJString: String = {
-    val str = new ArrayBuffer[String]
+    val str = header
     val propStr = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
     str += """ "properties": [""" + propStr.mkString(",") + "]"
     "{" + str.mkString(",") + "}"
   }

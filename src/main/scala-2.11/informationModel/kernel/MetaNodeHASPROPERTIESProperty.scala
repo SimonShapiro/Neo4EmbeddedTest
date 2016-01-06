@@ -14,11 +14,7 @@ class MetaNodeHASPROPERTIESProperty(from: MetaNode, to: Property, uid: String = 
   val _type: String = "MetaNodeHASPROPERTIESProperty"
 
   def toJString: String = {
-    val str = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
+    val str = header
     "{" + str.mkString(",") + "}"
   }
 
@@ -35,12 +31,8 @@ class MetaNodeHASPROPERTIESProperty(from: MetaNode, to: Property, uid: String = 
   override def isComplete: Boolean = true
 
   def toDyNetMLAsJString: String = {
-    val str = new ArrayBuffer[String]
+    val str = header
     val propStr = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
     str += """ "properties": [""" + propStr.mkString(",") + "]"
     "{" + str.mkString(",") + "}"
   }

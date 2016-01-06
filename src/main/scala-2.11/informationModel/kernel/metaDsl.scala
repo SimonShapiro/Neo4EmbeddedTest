@@ -1,14 +1,14 @@
 package informationModel.kernel
 
-import informationModel.core.{edge, edgeJson, node, nodeJson}
+import informationModel.core._
 
 /**
  * Created by simonshapiro on 08/12/15.
  */
-object Dsl {
+object metaDsl extends Dsl {
   def buildNode(n: nodeJson): node = {
     n._type match {
-      case "MetaModel" => {
+      case "MetaNode" => {
         val s = MetaNode(n.id)
         n.properties.foreach(p => {
           p.name match {
@@ -30,8 +30,8 @@ object Dsl {
         })
         d
       }
-      case "MetaEdge" => {
-        val d = MetaEdge(n.id)
+      case "MetaEdgeNode" => {
+        val d = MetaEdgeNode(n.id)
         n.properties.foreach(p => {
           p.name match {
             case "name" => d.name_(p.value)
@@ -52,13 +52,14 @@ object Dsl {
         val newEdge = new MetaNodeHASPROPERTIESProperty(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[Property],e.id)
         newEdge
       }
-      case "MetaNodeOUTBOUNDMetaEdge" => {
-        val newEdge = new MetaNodeOUTBOUNDMetaEdge(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[MetaEdge],e.id)
+      case "MetaEdgeHASPROPERTIESProperty" => {
+        val newEdge = new MetaEdgeHASPROPERTIESProperty(fromNode.asInstanceOf[MetaEdgeNode],toNode.asInstanceOf[Property],e.id)
         newEdge
       }
-      case "MetaNodeINBOUNDMetaEdge" => {
-        val newEdge = new MetaNodeINBOUNDMetaEdge(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[MetaEdge],e.id)
-        newEdge
+      case "MetaNodeCONNECTSMetaNode" => {
+        val newEdge = new MetaNodeCONNECTSMetaNode(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[MetaNode],e.id)
+        if (e.associationNode != "") newEdge.associatedWith_(nodes.filter(n=> (n.id == e.associationNode)).head)
+        else newEdge
       }
       case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(e.id, e.$type))
     }

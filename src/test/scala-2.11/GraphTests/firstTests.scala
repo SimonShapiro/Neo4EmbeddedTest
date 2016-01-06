@@ -4,8 +4,8 @@ package GraphTests
  * Created by simonshapiro on 26/11/15.
  */
 
-import informationModel.core.{GraphReader, GraphWriter, graph}
-import informationModel.dsl.{dataset, system, systemCONNECTSsystem}
+import informationModel.core.{Dsl, GraphReader, GraphWriter, graph}
+import informationModel.dsl.{modelDsl, dataset, system, systemCONNECTSsystem}
 import org.scalatest.FunSuite
 import play.api.libs.json._
 
@@ -187,7 +187,7 @@ class firstTests extends FunSuite {
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
     val json = g.toJsonAsDyNetML.toString
-    val g2 = new graph(json)
+    val g2 = new graph(json, modelDsl)
     assert(g2.isEqualTo(g))
     println("End: graph should be built from a toJsonDyNetML string representation")
   }

@@ -1,6 +1,5 @@
 package informationModel.core
 
-import informationModel.dsl.Dsl    // !!!! Unfortunate dependency
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -114,7 +113,7 @@ class graph {
     jsonInternal //  .toString
   }
 
-  def this(json: String) {
+  def this(json: String, dsl: Dsl) {
     this
     val jsonInternal = Json.parse(json)
     //  Process json into scala structures
@@ -136,15 +135,16 @@ class graph {
       (JsPath \ "$type").read[String] and
       (JsPath \ "from").read[String] and
       (JsPath \ "to").read[String] and
+      (JsPath \ "associationNode").read[String] and
       (JsPath \ "properties").read[List[propJson]]
     )(edgeJson.apply _)
 
     val nodeRes = (jsonInternal \ "graph" \ "nodes").as[List[nodeJson]]
     val edgeRes = (jsonInternal \ "graph" \ "edges").as[List[edgeJson]]
     //  Form graph from jsonInternal
-    val nodeList = nodeRes.map(n => Dsl.buildNode(n))
+    val nodeList = nodeRes.map(n => dsl.buildNode(n))
     nodeList.foreach(n => this <= n)
-    val edgeList = edgeRes.map(e => Dsl.buildEdge(e, nodeList))
+    val edgeList = edgeRes.map(e => dsl.buildEdge(e, nodeList))
     edgeList.foreach(e => this <=> e)
     println("pause")
   }

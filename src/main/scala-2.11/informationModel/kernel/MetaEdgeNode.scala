@@ -11,11 +11,11 @@ import scala.collection.mutable.ArrayBuffer
  * Created by simonshapiro on 23/11/15.
  */
 
-case class MetaEdge(val uid: String = null) extends node {
+case class MetaEdgeNode(val uid: String = null) extends node {
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "MetaEdge"
+  val _type: String = "MetaEdgeNode"
 
   private var _name: Option[String] = None
   def name = _name
@@ -40,8 +40,8 @@ case class MetaEdge(val uid: String = null) extends node {
     "{" + str.mkString(",") + "}"
   }
 
-  def deepCopy: MetaEdge = {
-    val s = MetaEdge(id)
+  def deepCopy: MetaEdgeNode = {
+    val s = MetaEdgeNode(id)
     _name match {
       case Some(st) => s.name_(st)
       case None =>
@@ -56,7 +56,7 @@ case class MetaEdge(val uid: String = null) extends node {
   override def isComplete: Boolean = true  // all properties optional
 
   override def isEqual(n: node) = {
-    val d = n.asInstanceOf[MetaEdge]
+    val d = n.asInstanceOf[MetaEdgeNode]
     (id == d.id) && (name == d.name) && (description == d.description)
   }
 

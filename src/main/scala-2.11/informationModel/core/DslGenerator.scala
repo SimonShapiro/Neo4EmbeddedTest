@@ -4,7 +4,7 @@ import java.io.{StringWriter, File}
 import java.util
 
 import freemarker.template.{SimpleHash, TemplateExceptionHandler, Configuration}
-import informationModel.kernel.{MetaNode, Property, MetaEdge}
+import informationModel.kernel.{MetaNode, Property, MetaEdgeNode}
 import play.api.libs.json.{JsPath, Reads}
 import play.api.libs.functional.syntax._
 
@@ -73,7 +73,7 @@ object DslGenerator {
     val edgesList = g.edges.filter(e => (e._2.getType.contains("CONNECTS"))).foreach(e => {  // find association class that is also a MetaEdge
             val props = new util.Vector[propJava]()
             e._2.associatedWith match {
-              case Some(x) =>   if (x.isInstanceOf[MetaEdge]) {
+              case Some(x) =>   if (x.isInstanceOf[MetaEdgeNode]) {
                                   val propTarget = g.edges.filter(e => ((e._2.isOfType("MetaEdgeHASPROPERTIESProperty")) && (x.id == e._2.from.id)))
                                   propTarget.map(t => g.getNode(t._2.to.id).asInstanceOf[Property]).foreach(p => {
                                     props += new propJava(p.name.getOrElse(p.id), p.valueType.getOrElse("String"))

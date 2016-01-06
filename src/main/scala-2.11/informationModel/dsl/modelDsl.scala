@@ -1,11 +1,11 @@
 package informationModel.dsl
 
-import informationModel.core.{edge, edgeJson, node, nodeJson}
+import informationModel.core.{edge, edgeJson, node, nodeJson, Dsl}
 
 /**
  * Created by simonshapiro on 08/12/15.
  */
-object Dsl {
+object modelDsl extends Dsl{
   def buildNode(n: nodeJson): node = {
     n._type match {
       case "System" => {
