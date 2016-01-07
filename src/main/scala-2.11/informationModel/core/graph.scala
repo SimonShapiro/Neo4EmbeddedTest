@@ -1,5 +1,6 @@
 package informationModel.core
 
+import informationModel.dsl.modelDsl
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
@@ -28,12 +29,16 @@ class graph {
   }
 
   def deepCopy = {
-    val gCopy = new graph
+    val g = toJsonAsDyNetML.toString
+    new graph(toJsonAsDyNetML.toString, modelDsl)  //need to rethink the role of the dsl in establishing the graph
+    /*
+    val gCopy = new graph(toJsonAsDyNetML)
     nodes.foreach(n => {
       gCopy.nodes(n._1) = n._2.deepCopy
     })
     edges.foreach(e => gCopy.edges += e)
     gCopy
+    */
   }
 
   def getNode(k: String) = {

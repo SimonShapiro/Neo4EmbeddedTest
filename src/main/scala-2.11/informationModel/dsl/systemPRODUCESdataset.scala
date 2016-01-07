@@ -17,15 +17,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   def frequency_(frequency: Int) = {_frequency = Option(frequency) ; this}
 
   def toJString: String = {
-    val str = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
-    _frequency match {
-      case Some(f) => str += """ "frequency": %s""".format(f)
-      case None =>
-    }
+    val str = header
     "{" + str.mkString(",") + "}"
   }
 
@@ -46,12 +38,8 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
   override def isComplete: Boolean = true
 
   def toDyNetMLAsJString: String = {
-    val str = new ArrayBuffer[String]
+    val str = header
     val propStr = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
     _frequency match {
       case Some(i) => propStr += propString[Int]("frequency",i)
       case None =>

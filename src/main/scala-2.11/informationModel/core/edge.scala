@@ -10,7 +10,7 @@ abstract class edge (val from: node, val to: node) extends graphMember{  // cons
 
   private var _asoociatedWith: Option[node] = None
   def associatedWith = _asoociatedWith
-  def associatedWith_(associationNode: node) = {_asoociatedWith = Option(associationNode); this}
+  def associatedWith_(associationNode: node) = {_asoociatedWith = Option(associationNode); this}  // generate an override to prevent use outside the meta context
 
   def deepCopy: edge
   def isEqual(e: edge): Boolean

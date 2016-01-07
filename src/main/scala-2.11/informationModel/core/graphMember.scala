@@ -15,6 +15,8 @@ abstract class graphMember {
 
   val id: String
 
+  override def toString = id
+
   def uuid = java.util.UUID.randomUUID.toString
 
   val _type: String

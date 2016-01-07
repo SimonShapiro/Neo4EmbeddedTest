@@ -1,6 +1,6 @@
 package informationModel.dsl
 
-import informationModel.core.edge
+import informationModel.core.{node, edge}
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -15,20 +15,39 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
 
   val _type: String = "SystemConnectsSystem"
 
-  private var _description: Option[String] = None
-  def description = _description
-  def description_(description:String) = {_description = Option(description) ; this}
+  override def associatedWith_(associationNode: node) = this  // to prevent the misuse of associatedWith_
 
-  def toJString: String = {
-    val str = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
-    _description match {
-      case Some(i) => str += """ "description": %s""".format(i)
+  private var _asoociatedWithDataset: Option[dataset] = None
+  def associatedWithDataset = _asoociatedWithDataset
+  def associatedWithDataset_(associationNode: dataset) = {
+                                          _asoociatedWithDataset = Option(associationNode)
+                                          this
+                                        }
+  private def associatedWithDatasetEquals(a: Option[dataset], b: Option[dataset]): Boolean = {
+    a match {
+      case Some(x) => b match {
+        case Some(y) => x.isEqual(y)
+        case None    => false
+      }
+      case None =>  b match {
+        case Some (y) => false
+        case None     => true
+      }
+    }
+  }
+
+  def toJString: String = {  // associated with data set - in plain view here and as property below.
+    val str = header
+    associatedWithDataset match {
+      case Some(x) => str += """ "associatedWithDataset": "%s" """.format(x.id)
       case None =>
     }
+    /*
+    str += """ "associatedWithDataset": "%s" """.format(associatedWithDataset match {
+                                                          case Some(x) => x.id
+                                                          case None => ""
+    })
+    */
     "{" + str.mkString(",") + "}"
   }
 
@@ -39,18 +58,18 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
 
   override def isEqual(ee: edge) = {
     val e = ee.asInstanceOf[systemCONNECTSsystem]
-    (id == e.id) && (from == e.from) && (to == e.to)  && (description == e.description)
+    (id == e.id) &&
+      (from == e.from) &&
+      (to == e.to)  &&
+      associatedWithDatasetEquals(associatedWithDataset,e.associatedWithDataset)
+      // && (description == e.description)
   }
 
   def toDyNetMLAsJString: String = {
-    val str = new ArrayBuffer[String]
+    val str = header
     val propStr = new ArrayBuffer[String]
-    str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    str += """ "from":  "%s"""".format(from.id)
-    str += """ "to":  "%s"""".format(to.id)
-    _description match {
-      case Some(st) => propStr += propString[String]("description", st)
+    associatedWithDataset match {
+      case Some(x) => propStr += propString[dataset]("associatedWithDataset",x)
       case None =>
     }
     str += """ "properties": [""" + propStr.mkString(",") + "]"

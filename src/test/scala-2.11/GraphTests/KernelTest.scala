@@ -29,6 +29,7 @@ class KernelTest extends FunSuite {
     GraphWriter.writeFile(KernelModel.model,file,path)
     assert(true)
   }
+
   test("Template generator installed") {
     val cfg = new Configuration(Configuration.VERSION_2_3_23)
     cfg.setDirectoryForTemplateLoading(new File("/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/src/main/scala-2.11/informationModel/kernel/templates"))

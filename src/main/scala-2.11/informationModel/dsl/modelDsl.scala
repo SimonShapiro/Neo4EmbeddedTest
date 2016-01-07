@@ -41,6 +41,7 @@ object modelDsl extends Dsl{
         val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
         e.properties.foreach(p => {
           p.name match {
+            case "associatedWithDataset" => newEdge.associatedWithDataset_(nodes.filter(n => n.id == p.value).head.asInstanceOf[dataset])  // is now an id on a node somewhere!!
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
           }
         })
