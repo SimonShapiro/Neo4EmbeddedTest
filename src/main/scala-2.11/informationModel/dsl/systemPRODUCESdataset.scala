@@ -10,7 +10,7 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
 
   val id = if (uid != null) uid else uuid
   
-  val _type: String = "SystemProducesDataset"
+  val _type: String = "systemPRODUCESdataset"
 
   private var _frequency: Option[Int] = None
   def frequency = _frequency

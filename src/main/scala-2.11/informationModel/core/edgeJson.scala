@@ -4,7 +4,7 @@ package informationModel.core
  * Created by simonshapiro on 08/12/15.
  */
 case class edgeJson(id: String,
-                    $type: String,
+                    _type: String,
                     from: String,
                     to: String,
                     associationNode: String,

@@ -72,9 +72,9 @@ class firstTests extends FunSuite {
     val n = g.getNode("a")
     val e = g.getEdge("a->b")
     assert(n.id == "a")
-    assert(n.getType == "System")
+    assert(n.getType == "system")
     assert(e.id == "a->b")
-    assert(e.getType == "SystemConnectsSystem")
+    assert(e.getType == "systemCONNECTSsystem")
     println("End: A graph should be able to return a typed node or edge by id")
   }
 
@@ -131,13 +131,13 @@ class firstTests extends FunSuite {
       assert(sg.isSubGraphOf(g))
   //    gUtils.typedSubgraph[system](g)
       */
-      val sg = g.filterOnNodeType("Dataset")
+      val sg = g.filterOnNodeType("dataset")
       assert((sg.nodes.size == 2) && (sg.edges.size == 1))
       assert(sg.isSubGraphOf(g))
       sg.getNode("DS").asInstanceOf[dataset].name_("ds")
       sg.getNode("S2").asInstanceOf[system].name_("fred")
       assert((!sg.isSubGraphOf(g)))
-      val sg2 = g.filterOnNodeType("System")
+      val sg2 = g.filterOnNodeType("system")
       assert(sg2.isSubGraphOf(g))
       sg2 <=> sg2.getNode("S3").asInstanceOf[system].CONNECTS(s2)
       assert(!sg2.isSubGraphOf(g))
@@ -153,7 +153,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS")
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","name":"Main Dataset"},{"id":"S1","$type":"System","name":"System 1"},{"id":"S2","$type":"System"}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2","associationNode":""}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","name":"Main Dataset"},{"id":"S1","$type":"system","name":"System 1"},{"id":"S2","$type":"system"}],"edges":[{"id":"S2_DS","$type":"systemPRODUCESdataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","$type":"systemCONNECTSsystem","from":"S1","to":"S2","associationNode":""}]}}"""
     val json = g.toJson
     println(json)
     assert(json == expectedResult)
@@ -171,7 +171,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"Dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"System","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"System","properties":[]}],"edges":[{"id":"S2_DS","$type":"SystemProducesDataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"SystemConnectsSystem","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"system","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"system","properties":[]}],"edges":[{"id":"S2_DS","$type":"systemPRODUCESdataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"systemCONNECTSsystem","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
     val json = g.toJsonAsDyNetML.toString
     println(json)
     assert(json == expectedResult)

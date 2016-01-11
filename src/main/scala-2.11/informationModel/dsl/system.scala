@@ -11,7 +11,7 @@ case class system(val uid: String = null) extends node {
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "System"
+  val _type: String = "system"
 
   private var _name: Option[String] = None
   def name = _name

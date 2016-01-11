@@ -14,7 +14,7 @@ object metaDsl extends Dsl {
           p.name match {
             case "name" => s.name_(p.value)
             case "description" => s.description_(p.value)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
       s
@@ -25,7 +25,7 @@ object metaDsl extends Dsl {
           p.name match {
             case "name" => d.name_(p.value)
             case "valueType" => d.valueType_(p.value)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
         d
@@ -36,7 +36,7 @@ object metaDsl extends Dsl {
           p.name match {
             case "name" => d.name_(p.value)
             case "description" => d.description_(p.value)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
         d
@@ -47,7 +47,7 @@ object metaDsl extends Dsl {
   def buildEdge(e: edgeJson, nodes: List[node]): edge = {
     val fromNode = nodes.filter(n => (n.id == e.from)).head
     val toNode = nodes.filter(n => (n.id == e.to)).head
-    e.$type match {
+    e._type match {
       case "MetaNodeHASPROPERTIESProperty" => {
         val newEdge = new MetaNodeHASPROPERTIESProperty(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[Property],e.id)
         newEdge
@@ -61,7 +61,7 @@ object metaDsl extends Dsl {
         if (e.associationNode != "") newEdge.associatedWith_(nodes.filter(n=> (n.id == e.associationNode)).head)
         else newEdge
       }
-      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(e.id, e.$type))
+      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(e.id, e._type))
     }
   }
 }

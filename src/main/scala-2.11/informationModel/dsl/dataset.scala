@@ -1,9 +1,6 @@
 package informationModel.dsl
 
 import informationModel.core.{node}
-import play.api.libs.json.Json
-
-import scala.collection.immutable
 import scala.collection.mutable.ArrayBuffer
 
 /**
@@ -12,7 +9,7 @@ import scala.collection.mutable.ArrayBuffer
 
 case class dataset(val uid: String = null) extends node {
   val id = if (uid != null) uid else uuid
-  val _type: String = "Dataset"
+  val _type: String = "dataset"
   def isComplete = true
 
   private var _name: Option[String] = None

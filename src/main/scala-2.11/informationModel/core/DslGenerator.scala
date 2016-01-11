@@ -80,7 +80,10 @@ object DslGenerator {
                                   })
 //                                  println("Has ",x)
                                 }
-//                                else println("Has association")
+                                else {
+                                  props += new propJava(x.id, "AssociationClass")
+                                  println("Has association class")
+                                }
               case None    =>  // println("Doesn't")
             }
             val edgeJ = new edgeJava(e._2.id,e._2.getType,e._2.from.id,e._2.to.id,props)

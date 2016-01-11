@@ -3,7 +3,7 @@ package informationModel.dsl
 import informationModel.core.{edge, edgeJson, node, nodeJson, Dsl}
 
 /**
- * Created by simonshapiro on 08/12/15.
+ * Created by simonshapiro on dd/mm/yyyy.
  */
 object modelDsl extends Dsl {
   def buildNode(n: nodeJson): node = {
@@ -15,7 +15,11 @@ object modelDsl extends Dsl {
         n.properties.foreach(p => {
           p.name match {
         <#list node.propertiesJava() as prop>
+          <#if prop.valueType() == "Integer">
+            case "${prop.name()}" => s.${prop.name()}_(p.value.toInt)
+          <#else>
             case "${prop.name()}" => s.${prop.name()}_(p.value)
+          </#if>
          </#list>
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
@@ -28,7 +32,6 @@ object modelDsl extends Dsl {
     }
   }
 
-
   def buildEdge(e: edgeJson, nodes: List[node]): edge = {
     val fromNode = nodes.filter(n => (n.id == e.from)).head
     val toNode = nodes.filter(n => (n.id == e.to)).head
@@ -39,7 +42,16 @@ object modelDsl extends Dsl {
         e.properties.foreach(p => {
           p.name match {
         <#list edge.propertiesJava() as prop>
-            case "${prop.name()}" => newEdge.${prop.name()}_(p.value)
+            <#if (prop.valueType() != "AssociationClass")>
+              <#if prop.valueType() == "Integer">
+                case "${prop.name()}" => newEdge.${prop.name()}_(p.value.toInt)
+              <#else>
+                case "${prop.name()}" => newEdge.${prop.name()}_(p.value)
+              </#if>
+            </#if>
+            <#if (prop.valueType() == "AssociationClass")>
+                case "associatedWith${prop.name()}" => newEdge.associatedWith${prop.name()}_(nodes.filter(n => n.id == p.value).head.asInstanceOf[${prop.name()}])  // is now an id on a node somewhere!!
+            </#if>
          </#list>
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }

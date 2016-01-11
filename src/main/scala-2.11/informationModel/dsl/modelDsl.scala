@@ -3,61 +3,61 @@ package informationModel.dsl
 import informationModel.core.{edge, edgeJson, node, nodeJson, Dsl}
 
 /**
- * Created by simonshapiro on 08/12/15.
+ * Created by simonshapiro on dd/mm/yyyy.
  */
-object modelDsl extends Dsl{
+object modelDsl extends Dsl {
   def buildNode(n: nodeJson): node = {
     n._type match {
-      case "System" => {
+      case "dataset" => {
+        val s = dataset(n.id)
+        n.properties.foreach(p => {
+          p.name match {
+            case "description" => s.description_(p.value)
+            case "name" => s.name_(p.value)
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+        s
+      }
+      case "system" => {
         val s = system(n.id)
         n.properties.foreach(p => {
           p.name match {
             case "name" => s.name_(p.value)
             case "description" => s.description_(p.value)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
-      s
-      }
-      case "Dataset" => {
-        val d = dataset(n.id)
-        n.properties.foreach(p => {
-          p.name match {
-            case "name" => d.name_(p.value)
-            case "description" => d.description_(p.value)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
-          }
-        })
-        d
+        s
       }
       case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(n.id, n._type))
     }
   }
+
   def buildEdge(e: edgeJson, nodes: List[node]): edge = {
     val fromNode = nodes.filter(n => (n.id == e.from)).head
     val toNode = nodes.filter(n => (n.id == e.to)).head
-    e.$type match {
-      case "SystemConnectsSystem" => {
-        val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
-        e.properties.foreach(p => {
-          p.name match {
-            case "associatedWithDataset" => newEdge.associatedWithDataset_(nodes.filter(n => n.id == p.value).head.asInstanceOf[dataset])  // is now an id on a node somewhere!!
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
-          }
-        })
-        newEdge
-      }
-      case "SystemProducesDataset" => {
+    e._type match {
+      case "systemPRODUCESdataset" => {
         val newEdge = new systemPRODUCESdataset(fromNode.asInstanceOf[system],toNode.asInstanceOf[dataset],e.id)
         e.properties.foreach(p => {
           p.name match {
             case "frequency" => newEdge.frequency_(p.value.toInt)
-            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p.$type,p.value))
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
         newEdge
       }
-      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(e.id, e.$type))
+      case "systemCONNECTSsystem" => {
+        val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
+        e.properties.foreach(p => {
+          p.name match {
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+        newEdge
+      }
+      case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(e.id, e._type))
     }
   }
 }

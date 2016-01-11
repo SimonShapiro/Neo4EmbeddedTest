@@ -13,7 +13,7 @@ class systemCONNECTSsystem(from: system, to:system, uid: String = null) extends 
 
   def isComplete: Boolean = true
 
-  val _type: String = "SystemConnectsSystem"
+  val _type: String = "systemCONNECTSsystem"
 
   override def associatedWith_(associationNode: node) = this  // to prevent the misuse of associatedWith_
 
