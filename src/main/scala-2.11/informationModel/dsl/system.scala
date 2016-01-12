@@ -4,7 +4,7 @@ import informationModel.core.node
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Created by simonshapiro on 23/11/15.
+ * Created by simonshapiro on dd/mm/yyyy.
  */
 
 case class system(val uid: String = null) extends node {
@@ -21,37 +21,32 @@ case class system(val uid: String = null) extends node {
   def description = _description
   def description_(description:String) = {_description = Option(description) ; this}
 
-  def CONNECTS(s: system, id: String = null) = {
-    new systemCONNECTSsystem(this, s, id)
-  }
-
-  def PRODUCES(d: dataset, id: String = null) = {
-    new systemPRODUCESdataset(this, d, id)
-  }
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
     _name match {
-      case Some(st) => str += """ "name": "%s"""".format(st)
+      case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
       case None =>
     }
+
     _description match {
-      case Some(i) => str += """ "description": %s""".format(i)
+      case Some(st) => str += """ "description": "%s"""".format(st)  //may need some shaping here around String
       case None =>
     }
+
     "{" + str.mkString(",") + "}"
   }
 
   def deepCopy: system = {
     val s = system(id)
     _name match {
-      case Some(st) => s.name_(st)
+      case Some(x) => s.name_(x)
       case None =>
     }
     _description match {
-      case Some(st) => s.description_(st)
+      case Some(x) => s.description_(x)
       case None =>
     }
     s
@@ -61,7 +56,10 @@ case class system(val uid: String = null) extends node {
 
   override def isEqual(n: node) = {
     val d = n.asInstanceOf[system]
-    (id == d.id) && (name == d.name) && (description == d.description)
+    ((id == d.id)
+      && (name== d.name)
+      && (description== d.description)
+      )
   }
 
   def toDyNetMLAsJString: String = {
@@ -70,14 +68,21 @@ case class system(val uid: String = null) extends node {
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)
     _name match {
-      case Some(st) => propStr += propString[String]("name",st)
+      case Some(x) => propStr += propString[String]("name",x)
       case None =>
     }
     _description match {
-      case Some(st) => propStr += propString[String]("description", st)
+      case Some(x) => propStr += propString[String]("description",x)
       case None =>
     }
     str += """ "properties": [""" + propStr.mkString(",") + "]"
     "{" + str.mkString(",") + "}"
+  }
+
+  def PRODUCES(s: dataset, id: String = null) = {
+    new systemPRODUCESdataset(this, s, id)
+  }
+  def CONNECTS(s: system, id: String = null) = {
+    new systemCONNECTSsystem(this, s, id)
   }
 }

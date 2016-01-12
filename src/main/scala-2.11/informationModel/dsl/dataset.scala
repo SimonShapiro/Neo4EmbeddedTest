@@ -1,56 +1,65 @@
 package informationModel.dsl
 
-import informationModel.core.{node}
+import informationModel.core.node
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Created by simonshapiro on 23/11/15.
+ * Created by simonshapiro on dd/mm/yyyy.
  */
 
 case class dataset(val uid: String = null) extends node {
-  val id = if (uid != null) uid else uuid
-  val _type: String = "dataset"
-  def isComplete = true
 
-  private var _name: Option[String] = None
-  def name = _name
-  def name_(name:String) = {_name = Option(name) ; this}
+  val id = if (uid != null) uid else uuid
+
+  val _type: String = "dataset"
 
   private var _description: Option[String] = None
   def description = _description
   def description_(description:String) = {_description = Option(description) ; this}
 
+  private var _name: Option[String] = None
+  def name = _name
+  def name_(name:String) = {_name = Option(name) ; this}
+
+
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
-    _name match {
-      case Some(st) => str += """ "name": "%s"""".format(st)
-      case None =>
-    }
+    str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
     _description match {
-      case Some(i) => str += """ "description": "%s""".format(i)
+      case Some(st) => str += """ "description": "%s"""".format(st)  //may need some shaping here around String
       case None =>
     }
+
+    _name match {
+      case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
+      case None =>
+    }
+
     "{" + str.mkString(",") + "}"
   }
 
   def deepCopy: dataset = {
     val s = dataset(id)
-    _name match {
-      case Some(st) => s.name_(st)
+    _description match {
+      case Some(x) => s.description_(x)
       case None =>
     }
-    _description match {
-      case Some(st) => s.description_(st)
+    _name match {
+      case Some(x) => s.name_(x)
       case None =>
     }
     s
   }
 
-  override def isEqual(dd: node) = {
-    val d = dd.asInstanceOf[dataset]
-    (id == d.id) && (name == d.name) && (description == d.description)
+  override def isComplete: Boolean = true  // all properties optional
+
+  override def isEqual(n: node) = {
+    val d = n.asInstanceOf[dataset]
+    ((id == d.id)
+      && (description== d.description)
+      && (name== d.name)
+      )
   }
 
   def toDyNetMLAsJString: String = {
@@ -58,15 +67,16 @@ case class dataset(val uid: String = null) extends node {
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)
-    _name match {
-      case Some(st) => propStr += propString[String]("name",st)
+    _description match {
+      case Some(x) => propStr += propString[String]("description",x)
       case None =>
     }
-    _description match {
-      case Some(st) => propStr += propString[String]("description", st)
+    _name match {
+      case Some(x) => propStr += propString[String]("name",x)
       case None =>
     }
     str += """ "properties": [""" + propStr.mkString(",") + "]"
     "{" + str.mkString(",") + "}"
   }
+
 }

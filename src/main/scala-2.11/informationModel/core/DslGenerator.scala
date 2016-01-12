@@ -1,11 +1,13 @@
 package informationModel.core
 
-import java.io.{StringWriter, File}
+import java.io.{FileNotFoundException, PrintWriter, StringWriter, File}
+import java.nio.file.{Files, Paths}
 import java.util
 
 import freemarker.template.{SimpleHash, TemplateExceptionHandler, Configuration}
 import informationModel.kernel.{MetaNode, Property, MetaEdgeNode}
-import play.api.libs.json.{JsPath, Reads}
+import org.joda.time.DateTime
+import play.api.libs.json.{Json, JsPath, Reads}
 import play.api.libs.functional.syntax._
 
 import scala.collection.JavaConversions._
@@ -15,13 +17,35 @@ import scala.collection.JavaConversions._
  */
 object DslGenerator {
 
+  def persistAsFile(filePath: String, fileName: String, str: String) = {
+    val folderPath = Paths.get(filePath)
+    val tmpDir = Files.createDirectories(folderPath)
+
+    val fullFileName = filePath + fileName
+
+//    val dir = new File(filePath)
+    try {
+      val pw = new PrintWriter(new File(fullFileName + ".scala"))
+      pw.print(str)
+      pw.close
+//      Some(fullFileName)
+    }
+    catch {
+      case e: FileNotFoundException => {
+        println(e)
+//        None
+      }
+    }
+  }
+
   val cfg = new Configuration(Configuration.VERSION_2_3_23)
   cfg.setDirectoryForTemplateLoading(new File("/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/src/main/scala-2.11/informationModel/kernel/templates"))
   cfg.setDefaultEncoding("UTF-8")
   cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
 
-  def generateDsl(templateFile: String, g: graph) = {
-    val template = cfg.getTemplate(templateFile)
+  def generateDsl(templateFile: String, g: graph) = {  // eventually just send in directory rather than file
+    val dslTemplate = cfg.getTemplate(templateFile)
+    val nodeTemplate = cfg.getTemplate("NODE.ftl")
     // val out = new OutputStreamWriter(System.out)
     val out = new StringWriter
     val data = new java.util.HashMap[String, Object]  // to be replaced
@@ -55,6 +79,8 @@ object DslGenerator {
     class propJava(val name: String, val valueType: String)
     class nodeJava(val id: String, val _type: String, val propertiesJava: java.util.Vector[propJava])
     class edgeJava(val id: String, val _type: String, val from: String, val to: String, val propertiesJava: java.util.Vector[propJava])
+    class singleNodeJava(val node: nodeJava, val outboundEdges: java.util.Vector[edgeJava])
+    val nodesForTemplate = new scala.collection.mutable.HashMap[String,singleNodeJava]
 
 //    g.nodes.foreach(n => nodes += n._2)
     val nodeJavaMap = new java.util.Vector[nodeJava]()
@@ -66,6 +92,7 @@ object DslGenerator {
             })
             val nodeJ = new nodeJava(n._2.id, n._2.getType, props)
             nodeJavaMap += nodeJ
+            nodesForTemplate(nodeJ.id) = new singleNodeJava(nodeJ,new util.Vector[edgeJava]())
     })
     data("nodes") = nodeJavaMap
 
@@ -88,14 +115,22 @@ object DslGenerator {
             }
             val edgeJ = new edgeJava(e._2.id,e._2.getType,e._2.from.id,e._2.to.id,props)
             edgeJavaMap += edgeJ
+            nodesForTemplate(e._2.from.id).outboundEdges += edgeJ
     })
     val triplesList = edgesList
 
     data("edges") = edgeJavaMap
 
     //    val dataAsJava = asJavaDictionary(data)  // need to form a structure to be passed in
-    template.process(data, out)
+    dslTemplate.process(data, out)
     val outString = out.toString
+    persistAsFile("generated/", "modelDsl", outString)
     println(outString)
+    nodesForTemplate.foreach(n => {
+      val strW = new StringWriter
+      nodeTemplate.process(n._2,strW)
+      persistAsFile("generated/", n._1, strW.toString)
+      println(strW.toString)
+    })
   }
 }
