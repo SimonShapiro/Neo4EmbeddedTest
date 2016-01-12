@@ -17,7 +17,7 @@ import scala.collection.JavaConversions._
  */
 object DslGenerator {
 
-  def persistAsFile(filePath: String, fileName: String, str: String) = {
+  def persistAsScalaClassFile(filePath: String, fileName: String, str: String) = {
     val folderPath = Paths.get(filePath)
     val tmpDir = Files.createDirectories(folderPath)
 
@@ -46,6 +46,7 @@ object DslGenerator {
   def generateDsl(templateFile: String, g: graph) = {  // eventually just send in directory rather than file
     val dslTemplate = cfg.getTemplate(templateFile)
     val nodeTemplate = cfg.getTemplate("NODE.ftl")
+    val edgeTemplate = cfg.getTemplate("EDGE.ftl")
     // val out = new OutputStreamWriter(System.out)
     val out = new StringWriter
     val data = new java.util.HashMap[String, Object]  // to be replaced
@@ -124,13 +125,20 @@ object DslGenerator {
     //    val dataAsJava = asJavaDictionary(data)  // need to form a structure to be passed in
     dslTemplate.process(data, out)
     val outString = out.toString
-    persistAsFile("generated/", "modelDsl", outString)
+    persistAsScalaClassFile("generated/", "modelDsl", outString)
     println(outString)
     nodesForTemplate.foreach(n => {
       val strW = new StringWriter
       nodeTemplate.process(n._2,strW)
-      persistAsFile("generated/", n._1, strW.toString)
+      persistAsScalaClassFile("generated/", n._1, strW.toString)
       println(strW.toString)
+    })
+    edgeJavaMap.toArray.foreach(eAny => {
+      val strW = new StringWriter
+      val e = eAny.asInstanceOf[edgeJava]
+      edgeTemplate.process(e, strW)
+      persistAsScalaClassFile("generated/", e.from+e.id+e.to, strW.toString)
+      println(e.id)
     })
   }
 }

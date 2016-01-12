@@ -32,7 +32,7 @@ class GeneratedModelTests extends FunSuite {
 
     val e_c = excel.CONNECTS(cyrus)
     model <=> excel.CONNECTS(excel)
-    model <=> e_c.associatedWithDataset_(d23)
+    model <=> e_c.associatedWithdataset_(d23)
     model <=> e_c.associatedWith_(excel)
     e_c.associatedWith match {
       case Some(x) => assert(false,"Expecting associatedWith to be ignored because it is only used in a meta context")
@@ -56,7 +56,7 @@ class GeneratedModelTests extends FunSuite {
     val e_c = excel.CONNECTS(cyrus,"e_c")
 
     model <=> excel.CONNECTS(excel)
-    model <=> e_c.associatedWithDataset_(d23)
+    model <=> e_c.associatedWithdataset_(d23)
     model <=> excel.CONNECTS(c2)
 
     model <=> (excel.PRODUCES(d23) frequency_ 12)
@@ -64,7 +64,7 @@ class GeneratedModelTests extends FunSuite {
     val modelStr = model.toJsonAsDyNetML
     val m2 = model.deepCopy
     assert(model.isEqualTo(m2))
-    m2.getEdge("e_c").asInstanceOf[systemCONNECTSsystem].associatedWithDataset_(d24)
+    m2.getEdge("e_c").asInstanceOf[systemCONNECTSsystem].associatedWithdataset_(d24)
 
     val m2Str = m2.toJsonAsDyNetML
 

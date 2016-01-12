@@ -21,8 +21,8 @@ object infomodel {
   model <= d23
 
   model <=> excel.CONNECTS(excel)
-  model <=> excel.CONNECTS(cyrus).associatedWithDataset_(d23)
-  model <=> excel.CONNECTS(c2).associatedWithDataset_(d24)
+  model <=> excel.CONNECTS(cyrus) //.associatedWithDataset_(d23)
+  model <=> excel.CONNECTS(c2) // .associatedWithDataset_(d24)
 
   model <=> (excel.PRODUCES(d23) frequency_ 12)
 
