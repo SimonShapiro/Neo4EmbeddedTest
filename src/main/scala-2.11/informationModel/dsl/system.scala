@@ -13,26 +13,26 @@ case class system(val uid: String = null) extends node {
 
   val _type: String = "system"
 
-    private var _name: Option[String] = None
-    def name = _name
-    def name_(name:String) = {_name = Option(name) ; this}
-
     private var _description: Option[String] = None
     def description = _description
     def description_(description:String) = {_description = Option(description) ; this}
+
+    private var _name: Option[String] = None
+    def name = _name
+    def name_(name:String) = {_name = Option(name) ; this}
 
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
-        _name match {
-          case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
+        _description match {
+          case Some(st) => str += """ "description": "%s"""".format(st)  //may need some shaping here around String
           case None =>
         }
 
-        _description match {
-          case Some(st) => str += """ "description": "%s"""".format(st)  //may need some shaping here around String
+        _name match {
+          case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
           case None =>
         }
 
@@ -41,12 +41,12 @@ case class system(val uid: String = null) extends node {
 
   def deepCopy: system = {
     val s = system(id)
-        _name match {
-          case Some(x) => s.name_(x)
-          case None =>
-        }
         _description match {
           case Some(x) => s.description_(x)
+          case None =>
+        }
+        _name match {
+          case Some(x) => s.name_(x)
           case None =>
         }
     s
@@ -57,8 +57,8 @@ case class system(val uid: String = null) extends node {
   override def isEqual(n: node) = {
     val d = n.asInstanceOf[system]
     ((id == d.id)
-        && (name== d.name)
         && (description== d.description)
+        && (name== d.name)
     )
   }
 
@@ -67,12 +67,12 @@ case class system(val uid: String = null) extends node {
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)
-        _name match {
-          case Some(x) => propStr += propString[String]("name",x)
-          case None =>
-        }
         _description match {
           case Some(x) => propStr += propString[String]("description",x)
+          case None =>
+        }
+        _name match {
+          case Some(x) => propStr += propString[String]("name",x)
           case None =>
         }
     str += """ "properties": [""" + propStr.mkString(",") + "]"
@@ -84,5 +84,8 @@ case class system(val uid: String = null) extends node {
   }
   def CONNECTS(s: system, id: String = null) = {
     new systemCONNECTSsystem(this, s, id)
+  }
+  def USES(s: dataset, id: String = null) = {
+    new systemUSESdataset(this, s, id)
   }
 }

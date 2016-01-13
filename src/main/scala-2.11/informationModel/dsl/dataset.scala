@@ -13,10 +13,6 @@ case class dataset(val uid: String = null) extends node {
 
   val _type: String = "dataset"
 
-    private var _name: Option[String] = None
-    def name = _name
-    def name_(name:String) = {_name = Option(name) ; this}
-
     private var _description: Option[String] = None
     def description = _description
     def description_(description:String) = {_description = Option(description) ; this}
@@ -25,16 +21,15 @@ case class dataset(val uid: String = null) extends node {
     def size = _size
     def size_(size:Integer) = {_size = Option(size) ; this}
 
+    private var _name: Option[String] = None
+    def name = _name
+    def name_(name:String) = {_name = Option(name) ; this}
+
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
-        _name match {
-          case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
-          case None =>
-        }
-
         _description match {
           case Some(st) => str += """ "description": "%s"""".format(st)  //may need some shaping here around String
           case None =>
@@ -45,21 +40,26 @@ case class dataset(val uid: String = null) extends node {
           case None =>
         }
 
+        _name match {
+          case Some(st) => str += """ "name": "%s"""".format(st)  //may need some shaping here around String
+          case None =>
+        }
+
     "{" + str.mkString(",") + "}"
   }
 
   def deepCopy: dataset = {
     val s = dataset(id)
-        _name match {
-          case Some(x) => s.name_(x)
-          case None =>
-        }
         _description match {
           case Some(x) => s.description_(x)
           case None =>
         }
         _size match {
           case Some(x) => s.size_(x)
+          case None =>
+        }
+        _name match {
+          case Some(x) => s.name_(x)
           case None =>
         }
     s
@@ -70,9 +70,9 @@ case class dataset(val uid: String = null) extends node {
   override def isEqual(n: node) = {
     val d = n.asInstanceOf[dataset]
     ((id == d.id)
-        && (name== d.name)
         && (description== d.description)
         && (size== d.size)
+        && (name== d.name)
     )
   }
 
@@ -81,16 +81,16 @@ case class dataset(val uid: String = null) extends node {
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
     str += """ "$type": "%s"""".format(_type)
-        _name match {
-          case Some(x) => propStr += propString[String]("name",x)
-          case None =>
-        }
         _description match {
           case Some(x) => propStr += propString[String]("description",x)
           case None =>
         }
         _size match {
-          case Some(x) => propStr += propString[String]("size",x)
+          case Some(x) => propStr += propString[Integer]("size",x)
+          case None =>
+        }
+        _name match {
+          case Some(x) => propStr += propString[String]("name",x)
           case None =>
         }
     str += """ "properties": [""" + propStr.mkString(",") + "]"
