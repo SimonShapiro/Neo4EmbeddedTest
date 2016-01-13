@@ -46,8 +46,8 @@ class KernelTest extends FunSuite {
     val outString = out.toString
     assert(out.toString.slice(0,11) == "Hi fred(27)")
   }
-  test("Generate dsl.scala from kernal model and ttemplate file") {
-    DslGenerator.generateDsl("DSL.ftl", KernelModel.model)
+  test("Generate dsl.scala from kernal model and template file") {
+    DslGenerator.generateDsl(KernelModel.model)
     assert(false)  //forced fail
   }
   test("Reconstitute the kernel from a .dnml file") {

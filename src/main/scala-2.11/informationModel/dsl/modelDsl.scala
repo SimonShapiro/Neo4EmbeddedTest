@@ -12,12 +12,13 @@ object modelDsl extends Dsl {
         val s = dataset(n.id)
         n.properties.foreach(p => {
           p.name match {
-            case "description" => s.description_(p.value)
             case "name" => s.name_(p.value)
+            case "description" => s.description_(p.value)
+            case "size" => s.size_(p.value.toInt)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
-        s
+      s
       }
       case "system" => {
         val s = system(n.id)
@@ -28,7 +29,7 @@ object modelDsl extends Dsl {
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
-        s
+      s
       }
       case _ => throw new IllegalArgumentException("%s:%s not in dsl".format(n.id, n._type))
     }
@@ -42,7 +43,7 @@ object modelDsl extends Dsl {
         val newEdge = new systemPRODUCESdataset(fromNode.asInstanceOf[system],toNode.asInstanceOf[dataset],e.id)
         e.properties.foreach(p => {
           p.name match {
-            case "frequency" => newEdge.frequency_(p.value.toInt)
+                case "frequency" => newEdge.frequency_(p.value.toInt)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
@@ -52,7 +53,7 @@ object modelDsl extends Dsl {
         val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
         e.properties.foreach(p => {
           p.name match {
-            case "associatedWithdataset" => newEdge.associatedWithdataset_(nodes.filter(n => n.id == p.value).head.asInstanceOf[dataset])  // is now an id on a node somewhere!!
+                case "associatedWithdataset" => newEdge.associatedWithdataset_(nodes.filter(n => n.id == p.value).head.asInstanceOf[dataset])  // is now an id on a node somewhere!!
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })

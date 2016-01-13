@@ -43,8 +43,8 @@ object DslGenerator {
   cfg.setDefaultEncoding("UTF-8")
   cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER)
 
-  def generateDsl(templateFile: String, g: graph) = {  // eventually just send in directory rather than file
-    val dslTemplate = cfg.getTemplate(templateFile)
+  def generateDsl(g: graph) = {  // eventually just send in directory rather than file
+    val dslTemplate = cfg.getTemplate("DSL.ftl")
     val nodeTemplate = cfg.getTemplate("NODE.ftl")
     val edgeTemplate = cfg.getTemplate("EDGE.ftl")
     // val out = new OutputStreamWriter(System.out)
@@ -125,20 +125,20 @@ object DslGenerator {
     //    val dataAsJava = asJavaDictionary(data)  // need to form a structure to be passed in
     dslTemplate.process(data, out)
     val outString = out.toString
-    persistAsScalaClassFile("generated/", "modelDsl", outString)
-    println(outString)
+    persistAsScalaClassFile("/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/src/main/scala-2.11/informationModel/dsl/", "modelDsl", outString)
+//    println(outString)
     nodesForTemplate.foreach(n => {
       val strW = new StringWriter
       nodeTemplate.process(n._2,strW)
-      persistAsScalaClassFile("generated/", n._1, strW.toString)
-      println(strW.toString)
+      persistAsScalaClassFile("/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/src/main/scala-2.11/informationModel/dsl/", n._1, strW.toString)
+//      println(strW.toString)
     })
     edgeJavaMap.toArray.foreach(eAny => {
       val strW = new StringWriter
       val e = eAny.asInstanceOf[edgeJava]
       edgeTemplate.process(e, strW)
-      persistAsScalaClassFile("generated/", e.from+e.id+e.to, strW.toString)
-      println(e.id)
+      persistAsScalaClassFile("/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/src/main/scala-2.11/informationModel/dsl/", e.from+e.id+e.to, strW.toString)
+//      println(e.id)
     })
   }
 }
