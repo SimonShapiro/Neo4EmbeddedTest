@@ -16,7 +16,7 @@ object GraphWriter {  // if the graphName does not exist it should be created
     val folderPath = Paths.get(filePath + graphName)
     val tmpDir = Files.createDirectories(folderPath)
 
-    val fullFileName = filePath + graphName + "/" + new DateTime().toString
+    val fullFileName = filePath + graphName + "/" + new DateTime().toString.replace(":","_")
 
     val gString = Json.prettyPrint(Json.parse(g.toJsonAsDyNetML.toString))
     val dir = new File(filePath)

@@ -25,6 +25,10 @@ case class dataset(val uid: String = null) extends node {
     def name = _name
     def name_(name:String) = {_name = Option(name) ; this}
 
+    private var _oraNodeClassType: Option[String] = None
+    def oraNodeClassType = _oraNodeClassType
+    def oraNodeClassType_(oraNodeClassType:String) = {_oraNodeClassType = Option(oraNodeClassType) ; this}
+
 
   def toJString: String = {
     val str = new ArrayBuffer[String]
@@ -45,6 +49,11 @@ case class dataset(val uid: String = null) extends node {
           case None =>
         }
 
+        _oraNodeClassType match {
+          case Some(st) => str += """ "oraNodeClassType": "%s"""".format(st)  //may need some shaping here around String
+          case None =>
+        }
+
     "{" + str.mkString(",") + "}"
   }
 
@@ -62,6 +71,10 @@ case class dataset(val uid: String = null) extends node {
           case Some(x) => s.name_(x)
           case None =>
         }
+        _oraNodeClassType match {
+          case Some(x) => s.oraNodeClassType_(x)
+          case None =>
+        }
     s
   }
 
@@ -73,6 +86,7 @@ case class dataset(val uid: String = null) extends node {
         && (description== d.description)
         && (size== d.size)
         && (name== d.name)
+        && (oraNodeClassType== d.oraNodeClassType)
     )
   }
 
@@ -86,11 +100,15 @@ case class dataset(val uid: String = null) extends node {
           case None =>
         }
         _size match {
-          case Some(x) => propStr += propString[Integer]("size",x)
+          case Some(x) => propStr += propString[String]("size",x)
           case None =>
         }
         _name match {
           case Some(x) => propStr += propString[String]("name",x)
+          case None =>
+        }
+        _oraNodeClassType match {
+          case Some(x) => propStr += propString[String]("oraNodeClassType",x)
           case None =>
         }
     str += """ "properties": [""" + propStr.mkString(",") + "]"
