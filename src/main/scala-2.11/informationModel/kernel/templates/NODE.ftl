@@ -17,7 +17,11 @@ case class ${node().id()}(val uid: String = null) extends node {
   <#list node().propertiesJava() as prop>
     private var _${prop.name()}: Option[${prop.valueType()}] = None
     def ${prop.name()} = _${prop.name()}
-    def ${prop.name()}_(${prop.name()}:${prop.valueType()}) = {_${prop.name()} = Option(${prop.name()}) ; this}
+    def ${prop.name()}_(${prop.name()}:${prop.valueType()}) = {
+        _${prop.name()} = Option(${prop.name()})
+        memberProperties("${prop.name()}") = ("${prop.valueType()}",${prop.name()}.toString())
+        this
+    }
 
   </#list>
 </#if>
@@ -72,7 +76,7 @@ case class ${node().id()}(val uid: String = null) extends node {
 <#if (node().propertiesJava()?size > 0)>
   <#list node().propertiesJava() as prop>
         _${prop.name()} match {
-          case Some(x) => propStr += propString[String]("${prop.name()}",x)
+          case Some(x) => propStr += propString[${prop.valueType()}]("${prop.name()}",x)
           case None =>
         }
   </#list>

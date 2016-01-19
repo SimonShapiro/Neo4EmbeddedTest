@@ -10,7 +10,7 @@ class systemCONNECTSsystem(from: system, to: system, uid: String = null) extends
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "systemCONNECTSsystem"
+  val _type: String = "system_CONNECTS_system"
 
         override def associatedWith_(associationNode: node) = this  // to prevent the misuse of associatedWith_
       
@@ -18,6 +18,7 @@ class systemCONNECTSsystem(from: system, to: system, uid: String = null) extends
         def associatedWithdataset = _associatedWithdataset
         def associatedWithdataset_(associationNode: dataset) = {
                                                 _associatedWithdataset = Option(associationNode)
+                                                memberProperties("associatedWithdataset") = ("dataset",associationNode.id)
                                                 this
                                               }
         private def associatedWithdatasetEquals(a: Option[dataset], b: Option[dataset]): Boolean = {

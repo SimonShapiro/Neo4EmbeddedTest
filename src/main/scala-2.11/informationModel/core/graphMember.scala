@@ -21,6 +21,8 @@ abstract class graphMember {
 
   val _type: String
 
+  val memberProperties = new mutable.HashMap[String, (String, String)]
+
   def getType = _type
 
   def isOfType(t: String) = (getType == t)

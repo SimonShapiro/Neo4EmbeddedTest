@@ -74,7 +74,7 @@ class firstTests extends FunSuite {
     assert(n.id == "a")
     assert(n.getType == "system")
     assert(e.id == "a->b")
-    assert(e.getType == "systemCONNECTSsystem")
+    assert(e.getType == "system_CONNECTS_system")
     println("End: A graph should be able to return a typed node or edge by id")
   }
 
@@ -153,7 +153,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS")
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","name":"Main Dataset"},{"id":"S1","$type":"system","name":"System 1"},{"id":"S2","$type":"system"}],"edges":[{"id":"S2_DS","$type":"systemPRODUCESdataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","$type":"systemCONNECTSsystem","from":"S1","to":"S2","associationNode":""}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","name":"Main Dataset"},{"id":"S1","$type":"system","name":"System 1"},{"id":"S2","$type":"system"}],"edges":[{"id":"S2_DS","$type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","$type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":""}]}}"""
     val json = g.toJson
     println(json)
     assert(json == expectedResult)
@@ -171,7 +171,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","properties":[{"name":"description","type":"String","value":"A description of the main dataset"},{"name":"name","type":"String","value":"Main Dataset"}]},{"id":"S1","$type":"system","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"system","properties":[]}],"edges":[{"id":"S2_DS","$type":"systemPRODUCESdataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"systemCONNECTSsystem","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"system","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"system","properties":[]}],"edges":[{"id":"S2_DS","$type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
     val json = g.toJsonAsDyNetML.toString
     println(json)
     assert(json == expectedResult)
@@ -208,7 +208,7 @@ class firstTests extends FunSuite {
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
 
     val fullFileName = GraphWriter.writeFile(g, gName, path)
-    val datetimePattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z".r
+    val datetimePattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}_[0-9]{2}_[0-9]{2}.[0-9]{3}Z".r
 //    val datetimePattern = "[0-9]{4}".r
 
     assert(fullFileName match {
@@ -349,5 +349,36 @@ class firstTests extends FunSuite {
     val g3 = g2too.mergeWithAndUpdateBy(g1too)
     assert(g3.asInstanceOf[graph].getNode("Three").asInstanceOf[system].name == Some("fred"))
     println("End: f.mergeWithAndUpdateBy(g) should have g overwrite f where appropriate")
+  }
+  test("A graph should have an dynetml.xml representation that facilitates transfer of data to ora") {
+
+    val path = "/Users/simonshapiro/IdeaProjects/Neo4EmbeddedTest/data/"
+    val model = new graph
+
+    val excel = system()        name_ "Excel"   description_ "Any spreadsheet"
+    val cyrus = system("Cyrus") name_ "Cyrus"   description_ "A forecasting tool"
+    val d23 = dataset("d23")    name_ "d23"     description_ "Data set 23 which carries a big payload of data"
+    val d24 = dataset("d24")    name_ "d24"     description_ "Data set 24 which carries a small payload of data" size_(100)
+    val c2 = system()           name_ "Cyrus"   description_ "Cyrus 2.0"
+
+    model <= excel
+    model <= cyrus
+    model <= c2
+    model <= d23
+
+    model <=> excel.CONNECTS(excel)
+    model <=> excel.CONNECTS(cyrus).associatedWithdataset_(d23)
+    model <=> excel.CONNECTS(c2).associatedWithdataset_(d24)
+
+    model <=> (excel.PRODUCES(d23) frequency_ 12)
+    model <=> (excel.PRODUCES(d24) frequency_ 1)
+    val done = GraphWriter.writeDyNetMl(model,"Test1",path,x => x match {
+                                          case "system" => "Resource"
+                                          case "dataset" => "Knowledge"
+                                          case _ => "Unknown"
+                                        })
+    println(done)
+    assert(true)
+    println("End: A graph should have an dynetml.xml representation that facilitates transfer of data to ora")
   }
 }

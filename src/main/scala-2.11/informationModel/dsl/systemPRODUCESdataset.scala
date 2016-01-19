@@ -10,11 +10,15 @@ class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) exten
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "systemPRODUCESdataset"
+  val _type: String = "system_PRODUCES_dataset"
 
-      private var _frequency: Option[Int] = None
+      private var _frequency: Option[Integer] = None
       def frequency = _frequency
-      def frequency_(frequency: Int) = {_frequency = Option(frequency) ; this}
+      def frequency_(frequency: Integer) = {
+        _frequency = Option(frequency)
+        memberProperties("frequency") = ("Integer",frequency.toString())
+        this
+      }
 
   def toJString: String = {
     val str = header

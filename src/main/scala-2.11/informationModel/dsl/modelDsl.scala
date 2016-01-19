@@ -12,10 +12,10 @@ object modelDsl extends Dsl {
         val s = dataset(n.id)
         n.properties.foreach(p => {
           p.name match {
-            case "description" => s.description_(p.value)
-            case "size" => s.size_(p.value.toInt)
             case "name" => s.name_(p.value)
+            case "description" => s.description_(p.value)
             case "oraNodeClassType" => s.oraNodeClassType_(p.value)
+            case "size" => s.size_(p.value.toInt)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
@@ -25,9 +25,9 @@ object modelDsl extends Dsl {
         val s = system(n.id)
         n.properties.foreach(p => {
           p.name match {
+            case "description" => s.description_(p.value)
             case "oraNodeClassType" => s.oraNodeClassType_(p.value)
             case "name" => s.name_(p.value)
-            case "description" => s.description_(p.value)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
@@ -41,7 +41,7 @@ object modelDsl extends Dsl {
     val fromNode = nodes.filter(n => (n.id == e.from)).head
     val toNode = nodes.filter(n => (n.id == e.to)).head
     e._type match {
-      case "systemPRODUCESdataset" => {
+      case "system_PRODUCES_dataset" => {
         val newEdge = new systemPRODUCESdataset(fromNode.asInstanceOf[system],toNode.asInstanceOf[dataset],e.id)
         e.properties.foreach(p => {
           p.name match {
@@ -51,7 +51,7 @@ object modelDsl extends Dsl {
         })
         newEdge
       }
-      case "systemCONNECTSsystem" => {
+      case "system_CONNECTS_system" => {
         val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
         e.properties.foreach(p => {
           p.name match {
@@ -61,7 +61,7 @@ object modelDsl extends Dsl {
         })
         newEdge
       }
-      case "systemUSESdataset" => {
+      case "system_USES_dataset" => {
         val newEdge = new systemUSESdataset(fromNode.asInstanceOf[system],toNode.asInstanceOf[dataset],e.id)
         e.properties.foreach(p => {
           p.name match {

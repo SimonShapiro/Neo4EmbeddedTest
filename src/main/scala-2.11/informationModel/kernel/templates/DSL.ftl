@@ -37,7 +37,7 @@ object modelDsl extends Dsl {
     val toNode = nodes.filter(n => (n.id == e.to)).head
     e._type match {
   <#list edges as edge>
-      case "${edge.from()}${edge.id()}${edge.to()}" => {
+      case "${edge.from()}_${edge.id()}_${edge.to()}" => {
         val newEdge = new ${edge.from()}${edge.id()}${edge.to()}(fromNode.asInstanceOf[${edge.from()}],toNode.asInstanceOf[${edge.to()}],e.id)
         e.properties.foreach(p => {
           p.name match {

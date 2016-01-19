@@ -10,7 +10,7 @@ class ${from()}${id()}${to()}(from: ${from()}, to: ${to()}, uid: String = null) 
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "${from()}${id()}${to()}"
+  val _type: String = "${from()}_${id()}_${to()}"
 
 <#list propertiesJava() as prop>
   <#switch prop.valueType()>
@@ -21,6 +21,7 @@ class ${from()}${id()}${to()}(from: ${from()}, to: ${to()}, uid: String = null) 
         def associatedWith${prop.name()} = _associatedWith${prop.name()}
         def associatedWith${prop.name()}_(associationNode: ${prop.name()}) = {
                                                 _associatedWith${prop.name()} = Option(associationNode)
+                                                memberProperties("associatedWith${prop.name()}") = ("${prop.name()}",associationNode.id)
                                                 this
                                               }
         private def associatedWith${prop.name()}Equals(a: Option[${prop.name()}], b: Option[${prop.name()}]): Boolean = {
@@ -36,15 +37,14 @@ class ${from()}${id()}${to()}(from: ${from()}, to: ${to()}, uid: String = null) 
           }
         }
       <#break>
-    <#case "Integer">
-      private var _${prop.name()}: Option[Int] = None
-      def ${prop.name()} = _${prop.name()}
-      def ${prop.name()}_(${prop.name()}: Int) = {_${prop.name()} = Option(${prop.name()}) ; this}
-      <#break>
     <#default>
-      private var _${prop.name()}: Option[String] = None
+      private var _${prop.name()}: Option[${prop.valueType()}] = None
       def ${prop.name()} = _${prop.name()}
-      def ${prop.name()}_(${prop.name()}: String) = {_${prop.name()} = Option(${prop.name()}) ; this}
+      def ${prop.name()}_(${prop.name()}: ${prop.valueType()}) = {
+        _${prop.name()} = Option(${prop.name()})
+        memberProperties("${prop.name()}") = ("${prop.valueType()}",${prop.name()}.toString())
+        this
+      }
       <#break>
   </#switch>
 </#list>

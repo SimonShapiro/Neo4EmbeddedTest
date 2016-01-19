@@ -10,7 +10,7 @@ class systemUSESdataset(from: system, to: dataset, uid: String = null) extends e
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "systemUSESdataset"
+  val _type: String = "system_USES_dataset"
 
 
   def toJString: String = {
