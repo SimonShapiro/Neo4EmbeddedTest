@@ -7,11 +7,11 @@ import scala.collection.mutable.ArrayBuffer
  * Created by simonshapiro on dd/mm/yyyy.
  */
 
-case class system(val uid: String = null) extends node {
+case class report(val uid: String = null) extends node {
 
   val id = if (uid != null) uid else uuid
 
-  val _type: String = "system"
+  val _type: String = "report"
 
     private var _description: Option[String] = None
     def description = _description
@@ -47,8 +47,8 @@ case class system(val uid: String = null) extends node {
     "{" + str.mkString(",") + "}"
   }
 
-  def deepCopy: system = {
-    val s = system(id)
+  def deepCopy: report = {
+    val s = report(id)
         _description match {
           case Some(x) => s.description_(x)
           case None =>
@@ -63,7 +63,7 @@ case class system(val uid: String = null) extends node {
   override def isComplete: Boolean = true  // all properties optional
 
   override def isEqual(n: node) = {
-    val d = n.asInstanceOf[system]
+    val d = n.asInstanceOf[report]
     ((id == d.id)
         && (description== d.description)
         && (name== d.name)
@@ -87,16 +87,4 @@ case class system(val uid: String = null) extends node {
     "{" + str.mkString(",") + "}"
   }
 
-  def PRODUCES(s: dataset, id: String = null) = {
-    new systemPRODUCESdataset(this, s, id)
-  }
-  def PRODUCESREPORT(s: report, id: String = null) = {
-    new systemPRODUCESREPORTreport(this, s, id)
-  }
-  def CONNECTS(s: system, id: String = null) = {
-    new systemCONNECTSsystem(this, s, id)
-  }
-  def USES(s: dataset, id: String = null) = {
-    new systemUSESdataset(this, s, id)
-  }
 }

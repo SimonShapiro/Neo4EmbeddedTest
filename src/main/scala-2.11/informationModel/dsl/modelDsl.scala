@@ -12,10 +12,31 @@ object modelDsl extends Dsl {
         val s = dataset(n.id)
         n.properties.foreach(p => {
           p.name match {
+            case "size" => s.size_(p.value.toInt)
             case "name" => s.name_(p.value)
             case "description" => s.description_(p.value)
-            case "oraNodeClassType" => s.oraNodeClassType_(p.value)
-            case "size" => s.size_(p.value.toInt)
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+      s
+      }
+      case "report" => {
+        val s = report(n.id)
+        n.properties.foreach(p => {
+          p.name match {
+            case "description" => s.description_(p.value)
+            case "name" => s.name_(p.value)
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+      s
+      }
+      case "businessUnit" => {
+        val s = businessUnit(n.id)
+        n.properties.foreach(p => {
+          p.name match {
+            case "name" => s.name_(p.value)
+            case "description" => s.description_(p.value)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
@@ -26,7 +47,6 @@ object modelDsl extends Dsl {
         n.properties.foreach(p => {
           p.name match {
             case "description" => s.description_(p.value)
-            case "oraNodeClassType" => s.oraNodeClassType_(p.value)
             case "name" => s.name_(p.value)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
@@ -51,6 +71,16 @@ object modelDsl extends Dsl {
         })
         newEdge
       }
+      case "system_PRODUCESREPORT_report" => {
+        val newEdge = new systemPRODUCESREPORTreport(fromNode.asInstanceOf[system],toNode.asInstanceOf[report],e.id)
+        e.properties.foreach(p => {
+          p.name match {
+                case "frequency" => newEdge.frequency_(p.value.toInt)
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+        newEdge
+      }
       case "system_CONNECTS_system" => {
         val newEdge = new systemCONNECTSsystem(fromNode.asInstanceOf[system],toNode.asInstanceOf[system],e.id)
         e.properties.foreach(p => {
@@ -65,6 +95,16 @@ object modelDsl extends Dsl {
         val newEdge = new systemUSESdataset(fromNode.asInstanceOf[system],toNode.asInstanceOf[dataset],e.id)
         e.properties.foreach(p => {
           p.name match {
+            case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
+          }
+        })
+        newEdge
+      }
+      case "businessUnit_PROVIDES_dataset" => {
+        val newEdge = new businessUnitPROVIDESdataset(fromNode.asInstanceOf[businessUnit],toNode.asInstanceOf[dataset],e.id)
+        e.properties.foreach(p => {
+          p.name match {
+                case "frequency" => newEdge.frequency_(p.value.toInt)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
