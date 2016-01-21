@@ -28,7 +28,7 @@ case class Property(val uid: String = null) extends node {
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
+    str += """ "_type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
     _name match {
       case Some(st) => str += """ "name": "%s"""".format(st)
       case None =>
@@ -64,7 +64,7 @@ case class Property(val uid: String = null) extends node {
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
+    str += """ "_type": "%s"""".format(_type)
     _name match {
       case Some(st) => propStr += propString[String]("name",st)
       case None =>

@@ -18,7 +18,7 @@ abstract class edge (val from: node, val to: node) extends graphMember{  // cons
   def header: ArrayBuffer[String] = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
+    str += """ "_type": "%s"""".format(_type)
     str += """ "from":  "%s"""".format(from.id)
     str += """ "to":  "%s"""".format(to.id)
     associatedWith match {

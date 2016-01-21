@@ -11,7 +11,7 @@ class MetaNodeCONNECTSMetaNode(from: MetaNode, to: MetaNode, uid: String = null)
 
   val id = if (uid != null) uid else uuid
   
-  val _type: String = "MetaNodeCONNECTSMetaNode"
+  val _type: String = "MetaNode_CONNECTS_MetaNode"
 
   def toJString: String = {
     val str = header

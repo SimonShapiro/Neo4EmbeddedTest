@@ -87,7 +87,7 @@ object DslGenerator {
     val nodeJavaMap = new java.util.Vector[nodeJava]()
     g.nodes.filter(metaNode => (metaNode._2.isOfType("MetaNode"))).foreach(n => {  // find properties from HASPROPERTIES edge
             val props = new util.Vector[propJava]()
-            val propTarget = g.edges.filter(e => ((e._2.isOfType("MetaNodeHASPROPERTIESProperty")) && (n._2.asInstanceOf[MetaNode].id == e._2.from.id)))
+            val propTarget = g.edges.filter(e => ((e._2.isOfType("MetaNode_HASPROPERTIES_Property")) && (n._2.asInstanceOf[MetaNode].id == e._2.from.id)))
             propTarget.map(t => g.getNode(t._2.to.id).asInstanceOf[Property]).foreach(p => {
               props += new propJava(p.name.getOrElse(p.id), p.valueType.getOrElse("String"))
             })
@@ -102,7 +102,7 @@ object DslGenerator {
             val props = new util.Vector[propJava]()
             e._2.associatedWith match {
               case Some(x) =>   if (x.isInstanceOf[MetaEdgeNode]) {
-                                  val propTarget = g.edges.filter(e => ((e._2.isOfType("MetaEdgeHASPROPERTIESProperty")) && (x.id == e._2.from.id)))
+                                  val propTarget = g.edges.filter(e => ((e._2.isOfType("MetaEdge_HASPROPERTIES_Property")) && (x.id == e._2.from.id)))
                                   propTarget.map(t => g.getNode(t._2.to.id).asInstanceOf[Property]).foreach(p => {
                                     props += new propJava(p.name.getOrElse(p.id), p.valueType.getOrElse("String"))
                                   })

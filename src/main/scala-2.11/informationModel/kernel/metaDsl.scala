@@ -48,15 +48,15 @@ object metaDsl extends Dsl {
     val fromNode = nodes.filter(n => (n.id == e.from)).head
     val toNode = nodes.filter(n => (n.id == e.to)).head
     e._type match {
-      case "MetaNodeHASPROPERTIESProperty" => {
+      case "MetaNode_HASPROPERTIES_Property" => {
         val newEdge = new MetaNodeHASPROPERTIESProperty(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[Property],e.id)
         newEdge
       }
-      case "MetaEdgeHASPROPERTIESProperty" => {
+      case "MetaEdge_HASPROPERTIES_Property" => {
         val newEdge = new MetaEdgeHASPROPERTIESProperty(fromNode.asInstanceOf[MetaEdgeNode],toNode.asInstanceOf[Property],e.id)
         newEdge
       }
-      case "MetaNodeCONNECTSMetaNode" => {
+      case "MetaNode_CONNECTS_MetaNode" => {
         val newEdge = new MetaNodeCONNECTSMetaNode(fromNode.asInstanceOf[MetaNode],toNode.asInstanceOf[MetaNode],e.id)
         if (e.associationNode != "") newEdge.associatedWith_(nodes.filter(n=> (n.id == e.associationNode)).head)
         else newEdge

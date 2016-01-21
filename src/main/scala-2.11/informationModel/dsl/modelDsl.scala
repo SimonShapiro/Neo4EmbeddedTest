@@ -12,9 +12,9 @@ object modelDsl extends Dsl {
         val s = dataset(n.id)
         n.properties.foreach(p => {
           p.name match {
+            case "description" => s.description_(p.value)
             case "size" => s.size_(p.value.toInt)
             case "name" => s.name_(p.value)
-            case "description" => s.description_(p.value)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })
@@ -46,8 +46,8 @@ object modelDsl extends Dsl {
         val s = system(n.id)
         n.properties.foreach(p => {
           p.name match {
-            case "description" => s.description_(p.value)
             case "name" => s.name_(p.value)
+            case "description" => s.description_(p.value)
             case _ => throw new IllegalArgumentException("%s:%s of type %s does not conform to dsl".format(p.name,p._type,p.value))
           }
         })

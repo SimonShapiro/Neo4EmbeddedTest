@@ -11,7 +11,7 @@ class MetaNodeHASPROPERTIESProperty(from: MetaNode, to: Property, uid: String = 
 
   val id = if (uid != null) uid else uuid
   
-  val _type: String = "MetaNodeHASPROPERTIESProperty"
+  val _type: String = "MetaNode_HASPROPERTIES_Property"
 
   def toJString: String = {
     val str = header

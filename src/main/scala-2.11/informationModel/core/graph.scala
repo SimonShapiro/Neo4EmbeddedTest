@@ -131,13 +131,13 @@ class graph {
 
     implicit val nodeReads: Reads[nodeJson] = (
       (JsPath \ "id").read[String]   and // readNullable?
-      (JsPath \ "$type").read[String] and
+      (JsPath \ "_type").read[String] and
       (JsPath \ "properties").read[List[propJson]]
     )(nodeJson.apply _)
 
     implicit val edgeReads: Reads[edgeJson] = (
       (JsPath \ "id").read[String]   and // readNullable?
-      (JsPath \ "$type").read[String] and
+      (JsPath \ "_type").read[String] and
       (JsPath \ "from").read[String] and
       (JsPath \ "to").read[String] and
       (JsPath \ "associationNode").read[String] and

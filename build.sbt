@@ -17,3 +17,5 @@ libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0-M1"
 libraryDependencies += "org.scala-lang.modules" % "scala-pickling_2.11" % "0.10.1"
 
 libraryDependencies += "org.freemarker" % "freemarker" % "2.3.23"
+
+libraryDependencies += "org.mongodb.scala" %% "mongo-scala-driver" % "1.1.0"

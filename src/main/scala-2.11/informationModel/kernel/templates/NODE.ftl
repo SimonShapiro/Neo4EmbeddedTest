@@ -29,7 +29,7 @@ case class ${node().id()}(val uid: String = null) extends node {
   def toJString: String = {
     val str = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
+    str += """ "_type": "%s"""".format(_type)   // followed by an array of generalised properties (_name, _type, _valueString)
 <#if (node().propertiesJava()?size > 0)>
   <#list node().propertiesJava() as prop>
         _${prop.name()} match {
@@ -72,7 +72,7 @@ case class ${node().id()}(val uid: String = null) extends node {
     val str = new ArrayBuffer[String]
     val propStr = new ArrayBuffer[String]
     str += """ "id": "%s"""".format(id)
-    str += """ "$type": "%s"""".format(_type)
+    str += """ "_type": "%s"""".format(_type)
 <#if (node().propertiesJava()?size > 0)>
   <#list node().propertiesJava() as prop>
         _${prop.name()} match {

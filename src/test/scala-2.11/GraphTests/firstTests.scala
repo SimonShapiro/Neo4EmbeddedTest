@@ -153,7 +153,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS")
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","name":"Main Dataset"},{"id":"S1","$type":"system","name":"System 1"},{"id":"S2","$type":"system"}],"edges":[{"id":"S2_DS","$type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","$type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":""}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","_type":"dataset","name":"Main Dataset"},{"id":"S1","_type":"system","name":"System 1"},{"id":"S2","_type":"system"}],"edges":[{"id":"S2_DS","_type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":""},{"id":"S1_S2","_type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":""}]}}"""
     val json = g.toJson
     println(json)
     assert(json == expectedResult)
@@ -171,7 +171,7 @@ class firstTests extends FunSuite {
     g <= s2
     g <=> s1.CONNECTS(s2,"S1_S2")
     g <=> s2.PRODUCES(ds,"S2_DS").frequency_(12)
-    val expectedResult = """{"graph":{"nodes":[{"id":"DS","$type":"dataset","properties":[{"name":"name","type":"String","value":"Main Dataset"},{"name":"description","type":"String","value":"A description of the main dataset"}]},{"id":"S1","$type":"system","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","$type":"system","properties":[]}],"edges":[{"id":"S2_DS","$type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","$type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
+    val expectedResult = """{"graph":{"nodes":[{"id":"DS","_type":"dataset","properties":[{"name":"description","type":"String","value":"A description of the main dataset"},{"name":"name","type":"String","value":"Main Dataset"}]},{"id":"S1","_type":"system","properties":[{"name":"name","type":"String","value":"System 1"}]},{"id":"S2","_type":"system","properties":[]}],"edges":[{"id":"S2_DS","_type":"system_PRODUCES_dataset","from":"S2","to":"DS","associationNode":"","properties":[{"name":"frequency","type":"Integer","value":"12"}]},{"id":"S1_S2","_type":"system_CONNECTS_system","from":"S1","to":"S2","associationNode":"","properties":[]}]}}"""
     val json = g.toJsonAsDyNetML.toString
     println(json)
     assert(json == expectedResult)

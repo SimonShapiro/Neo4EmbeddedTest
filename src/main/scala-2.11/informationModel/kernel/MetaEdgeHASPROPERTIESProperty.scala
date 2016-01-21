@@ -11,7 +11,7 @@ class MetaEdgeHASPROPERTIESProperty(from: MetaEdgeNode, to: Property, uid: Strin
 
   val id = if (uid != null) uid else uuid
   
-  val _type: String = "MetaEdgeHASPROPERTIESProperty"
+  val _type: String = "MetaEdge_HASPROPERTIES_Property"
 
   def toJString: String = {
     val str = header
