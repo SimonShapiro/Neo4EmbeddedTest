@@ -372,11 +372,17 @@ class firstTests extends FunSuite {
 
     model <=> (excel.PRODUCES(d23) frequency_ 12)
     model <=> (excel.PRODUCES(d24) frequency_ 1)
-    val done = GraphWriter.writeDyNetMl(model,"Test1",path,x => x match {
-                                          case "system" => "Resource"
-                                          case "dataset" => "Knowledge"
-                                          case _ => "Unknown"
-                                        })
+    model <=> cyrus.USES(d24)
+    val done = GraphWriter.writeDyNetMl(model,"Test1",path,
+                                          x => x match {
+                                            case "system" => "Resource"
+                                            case "dataset" => "Knowledge"
+                                            case _ => "Unknown"
+                                          },
+                                          x => x match {
+                                            case "system_USES_dataset" => true
+                                            case _ => false
+                                          })
     println(done)
     assert(true)
     println("End: A graph should have an dynetml.xml representation that facilitates transfer of data to ora")

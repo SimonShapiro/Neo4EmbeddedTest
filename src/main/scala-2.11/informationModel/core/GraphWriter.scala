@@ -34,7 +34,7 @@ object GraphWriter {  // if the graphName does not exist it should be created
     }
   }
 
-  def writeDyNetMl(g: graph, graphName: String, filePath: String, iconMap: (String) => String) = {
+  def writeDyNetMl(g: graph, graphName: String, filePath: String, iconMap: (String) => String, isReversed: (String) => Boolean) = {
     def unique[A](ls: List[A]) = {
       def loop(set: Set[A], ls: List[A]): List[A] = ls match {
         case hd :: tail if set contains hd => loop(set, tail)
@@ -60,17 +60,28 @@ object GraphWriter {  // if the graphName does not exist it should be created
             </nodeclass>)}
           </Nodes>
           <Networks>
-            {unique[String](g.edges.map(n => n._2.getType).toList).map(ee =>
-            <network sourceType={iconMap(ee.split('_')(0))} source={ee.split('_')(0)} targetType={iconMap(ee.split('_')(2))} target={ee.split('_')(2)} id={ee} isDirected="true" allowSelfLoops="true" isBinary="false" dynetmlUndirectedCompressed="false">
-              {g.edges.filter(edges => edges._2._type == ee).map(edge =>
-              <link source={edge._2.from.id} target={edge._2.to.id}>
-                {edge._2.memberProperties.map(prop =>
-                  <property id={prop._1} type={prop._2._1} value={prop._2._2}/>
+            {unique[String](g.edges.map(n => n._2.getType).toList).map(ee => {
+            if (!isReversed(ee))
+              <network sourceType={iconMap(ee.split('_')(0))} source= {ee.split('_')(0)} targetType={iconMap(ee.split('_')(2))} target={ee.split('_')(2)} id={ee} isDirected="true" allowSelfLoops="true" isBinary="false" dynetmlUndirectedCompressed="false">
+                {g.edges.filter(edges => edges._2._type == ee).map(edge =>
+                <link source={edge._2.from.id} target={edge._2.to.id}>
+                  {edge._2.memberProperties.map(prop =>
+                    <property id={prop._1} type={prop._2._1} value={prop._2._2}/>
+                )}
+                </link>
               )}
-              </link>
-            )}
-            </network>
-          )}
+              </network>
+          else {
+              <network sourceType={iconMap(ee.split('_')(2))} source={ee.split('_')(2)} targetType={iconMap(ee.split('_')(0))} target={ee.split('_')(0)} id={ee+"(R)"} isDirected="true" allowSelfLoops="true" isBinary="false" dynetmlUndirectedCompressed="false">
+                {g.edges.filter(edges => edges._2._type == ee).map(edge =>
+                <link source={edge._2.to.id} target={edge._2.from.id }>
+                  {edge._2.memberProperties.map(prop =>
+                    <property id={prop._1} type={prop._2._1} value={prop._2._2}/>
+                )}
+                </link>
+              )}
+              </network>
+    }})}
           </Networks>
         </MetaNetwork>
       </DynamicMetaNetwork>
