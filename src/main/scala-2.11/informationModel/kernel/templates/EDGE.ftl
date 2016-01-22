@@ -9,8 +9,10 @@ import scala.collection.mutable.ArrayBuffer
 class ${from()}${id()}${to()}(from: ${from()}, to: ${to()}, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "${from()}_${id()}_${to()}"
+  memberProperties("_type") = ("String", _type)
 
 <#list propertiesJava() as prop>
   <#switch prop.valueType()>

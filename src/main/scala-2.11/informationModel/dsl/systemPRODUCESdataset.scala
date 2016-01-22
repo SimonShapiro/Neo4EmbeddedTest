@@ -9,8 +9,10 @@ import scala.collection.mutable.ArrayBuffer
 class systemPRODUCESdataset(from: system, to: dataset, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "system_PRODUCES_dataset"
+  memberProperties("_type") = ("String", _type)
 
       private var _frequency: Option[Integer] = None
       def frequency = _frequency

@@ -9,8 +9,10 @@ import scala.collection.mutable.ArrayBuffer
 class systemCONNECTSsystem(from: system, to: system, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "system_CONNECTS_system"
+  memberProperties("_type") = ("String", _type)
 
         override def associatedWith_(associationNode: node) = this  // to prevent the misuse of associatedWith_
       

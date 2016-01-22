@@ -10,8 +10,10 @@ import scala.collection.mutable.ArrayBuffer
 case class ${node().id()}(val uid: String = null) extends node {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "${node().id()}"
+  memberProperties("_type") = ("String", _type)
 
 <#if (node().propertiesJava()?size > 0)>
   <#list node().propertiesJava() as prop>

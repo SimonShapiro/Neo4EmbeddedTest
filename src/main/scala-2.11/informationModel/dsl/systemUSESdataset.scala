@@ -9,8 +9,10 @@ import scala.collection.mutable.ArrayBuffer
 class systemUSESdataset(from: system, to: dataset, uid: String = null) extends edge(from, to) {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "system_USES_dataset"
+  memberProperties("_type") = ("String", _type)
 
 
   def toJString: String = {

@@ -10,8 +10,10 @@ import scala.collection.mutable.ArrayBuffer
 case class report(val uid: String = null) extends node {
 
   val id = if (uid != null) uid else uuid
+  memberProperties("id") = ("String", id)
 
   val _type: String = "report"
+  memberProperties("_type") = ("String", _type)
 
     private var _description: Option[String] = None
     def description = _description
